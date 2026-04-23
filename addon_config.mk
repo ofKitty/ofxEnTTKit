@@ -29,7 +29,10 @@ common:
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	# ADDON_INCLUDES =
+	#
+	# $(OF_ROOT)/addons is required so cross-addon includes like
+	# "ofxEnTTKit/src/components/foo.h" resolve correctly.
+	ADDON_INCLUDES += $(OF_ROOT)/addons
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
