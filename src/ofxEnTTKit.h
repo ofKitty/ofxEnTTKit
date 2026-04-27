@@ -32,6 +32,7 @@
 #include "entity_utils.h"
 
 // Components
+#include "components/hierarchy_components.h"
 #include "components/base_components.h"
 #include "components/rendering_components.h"
 #include "components/graphics2d_components.h"
@@ -52,5 +53,9 @@
 #include "components/midi_source_component.h"
 #include "components/canvas_effects_component.h"
 
+// ECS-native node handle
+#include "ofxNode.h"
+
 // Systems
 #include "systems/systems.h"
+#include "systems/TransformSystem.h"

@@ -149,7 +149,7 @@ struct modulator_component {
     void update(float dt) {
         if (!playing) return;
         
-        float prevTime = time;
+        //float prevTime = time;
         time += dt;
         
         // Check for cycle boundary (for noise types)

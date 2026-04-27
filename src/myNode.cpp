@@ -16,27 +16,6 @@ myNode* myNode::getParent()
     return dynamic_cast<myNode*>(ofNode::getParent());
 }
 
-// Transform change callbacks - called by ofNode setters
-void myNode::onPositionChanged()
-{
-    transformDirty.store(true);
-    if (m_initialized) {
-        ofNotifyEvent(transformChanged, *this);
-    }
-}
-
-void myNode::onOrientationChanged()
-{
-    transformDirty.store(true);
-    if (m_initialized) {
-        ofNotifyEvent(transformChanged, *this);
-    }
-}
-
-void myNode::onScaleChanged()
-{
-    transformDirty.store(true);
-    if (m_initialized) {
-        ofNotifyEvent(transformChanged, *this);
-    }
-}
+void myNode::onPositionChanged()    { transformDirty = true; }
+void myNode::onOrientationChanged() { transformDirty = true; }
+void myNode::onScaleChanged()       { transformDirty = true; }
