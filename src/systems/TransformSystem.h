@@ -1,6 +1,7 @@
 #pragma once
 
 #include <entt.hpp>
+#include <glm/glm.hpp>
 
 namespace ecs {
 
