@@ -22,7 +22,11 @@
 // Components use _component suffix (e.g., ecs::camera_component)
 // Systems use descriptive names (e.g., ecs::Graphics2DRender)
 //
-// Note: Inspector/UI code is NOT part of ofxEnTT - it belongs in your app.
+// Inspector / ImGui property drawers live in ofxEnTTInspector (type-driven).
+//
+// Shipped-kit “Add Component” menu rows (labels + add/remove hooks) are declared
+// in component_editor_registration.h — pulled in below so one #include gets
+// both ECS definitions and ecs::registerKitComponentMenu(...) for shells.
 // ============================================================================
 
 // EnTT core
@@ -52,6 +56,9 @@
 #include "components/audio_source_component.h"
 #include "components/midi_source_component.h"
 #include "components/canvas_effects_component.h"
+
+// Default picker rows for shipped ecs::* types (ofxKit Properties, …)
+#include "component_editor_registration.h"
 
 // ECS-native node handle
 #include "ofxNode.h"
