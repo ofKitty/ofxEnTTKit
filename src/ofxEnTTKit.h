@@ -45,6 +45,7 @@
 #include "components/hardware_components.h"
 #include "components/led_components.h"
 #include "components/utility_components.h"
+#include "components/layer_components.h"
 #include "components/modulator_component.h"
 #include "components/swatch_components.h"
 #include "components/easing.h"
