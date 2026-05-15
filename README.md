@@ -53,9 +53,7 @@ Quick overview:
 | systems                                        | `systems/*.h` (via `systems/systems.h`) |
 | editor **Add Component** rows (labels + hooks) | `component_editor_registration.h` (implementation: `component_editor_registration.cpp`) |
 
-## Visual Studio note
-
-Heavy template instantiation can hit `C1128 (too many sections)`. `addon_config.mk` adds `/bigobj` to avoid it.
+> Add [ofxEnTTInspector](https://github.com/ofKitty/ofxEnTTInspector) for a unified reflection and serialization foundation.
 
 ## License
 
