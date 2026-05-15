@@ -8,6 +8,11 @@
 // Systems that support layers should filter on this component and skip
 // entities where !lc.visible or lc.locked.
 //
+// For layer HIERARCHY (parent / child layers, clipping groups, etc.) compose
+// this with ecs::Relationship (see hierarchy_components.h).  The Relationship
+// component provides the full linked-list scene-graph (parent, first_child,
+// prev_sibling, next_sibling) with zero heap allocation per node.
+//
 // Example — rendering only visible entities on each layer in order:
 //
 //   auto view = registry.view<ecs::drawable, ecs::layer_component>();
@@ -17,6 +22,11 @@
 //       if (!lc.visible) continue;
 //       // ... draw e ...
 //   }
+//
+// Example — parenting one layer entity under another:
+//
+//   // Requires ofxNode / your own reparent helper that updates Relationship.
+//   reparentEntity(registry, childLayerEntity, parentLayerEntity);
 // ============================================================================
 
 namespace ecs {

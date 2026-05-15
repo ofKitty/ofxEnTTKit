@@ -34,7 +34,7 @@ ImGui property drawing remains type-based in **ofxEnTTInspector**; this list is 
 
 ## What's inside
 
-See [`COMPONENTS_REFERENCE.md`](COMPONENTS_REFERENCE.md) for the full catalogue.
+See [`COMPONENTS_REFERENCE.md`](COMPONENTS_REFERENCE.md) for the full component catalogue and [`SYSTEMS_REFERENCE.md`](SYSTEMS_REFERENCE.md) for the systems reference (purpose, components consumed, public API, frame loop ordering).
 
 Quick overview:
 

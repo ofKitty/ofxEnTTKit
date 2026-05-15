@@ -40,6 +40,7 @@
 #include "effects_render_system.h"
 #include "led_system.h"
 #include "uv_render_system.h"
+#include "layer_system.h"
 
 // Future systems:
 // #include "camera_system.h"
