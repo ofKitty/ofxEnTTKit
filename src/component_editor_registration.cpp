@@ -141,6 +141,13 @@ void registerKitComponentMenu(ComponentMenuCallback sink)
     registerSimple<osc_component>(sink, "OSC", "Hardware");
     registerSimple<audio_source_component>(sink, "Audio Source", "Hardware");
     registerSimple<midi_source_component>(sink, "MIDI", "Hardware");
+
+    // ── Music ─────────────────────────────────────────────────────────────────
+    registerSimple<transport_control_component>(sink, "Transport", "Music");
+    registerSimple<clock_component>(sink, "Clock", "Music");
+    registerSimple<sequencer_component>(sink, "Sequencer", "Music");
+    registerSimple<pattern_component>(sink, "Pattern", "Music");
+    registerSimple<midi_output_component>(sink, "MIDI Output", "Music");
 }
 
 } // namespace ecs
