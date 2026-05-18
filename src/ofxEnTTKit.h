@@ -67,3 +67,6 @@
 // Systems
 #include "systems/systems.h"
 #include "systems/TransformSystem.h"
+
+// 2D transform handle widget (ImGui, header-only)
+#include "TransformHandle2D.h"
