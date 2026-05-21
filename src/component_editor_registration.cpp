@@ -141,6 +141,11 @@ void registerKitComponentMenu(ComponentMenuCallback sink)
     registerSimple<osc_component>(sink, "OSC", "Hardware");
     registerSimple<audio_source_component>(sink, "Audio Source", "Hardware");
     registerSimple<midi_source_component>(sink, "MIDI", "Hardware");
+    registerSimple<mmwave_c4001_component>(sink, "mmWave C4001", "Hardware");
+    registerSimple<gpio_component>(sink, "GPIO Trigger", "Hardware");
+    registerSimple<fbo_component>(sink, "FBO Canvas", "Media");
+    registerSimple<uv_component>(sink, "UV LED Map", "LED");
+    registerSimple<uv_sample_component>(sink, "UV Sample", "LED");
 
     // ── Music ─────────────────────────────────────────────────────────────────
     registerSimple<transport_control_component>(sink, "Transport", "Music");
@@ -148,6 +153,10 @@ void registerKitComponentMenu(ComponentMenuCallback sink)
     registerSimple<sequencer_component>(sink, "Sequencer", "Music");
     registerSimple<pattern_component>(sink, "Pattern", "Music");
     registerSimple<midi_output_component>(sink, "MIDI Output", "Music");
+    registerSimple<trigger_lane_component>(sink, "Trigger Lane", "Music");
+    registerSimple<trigger_pattern_component>(sink, "Trigger Pattern", "Music");
+    registerSimple<trigger_pattern_data_component>(sink, "Trigger Pattern Data", "Music");
+    registerSimple<trigger_sequencer_component>(sink, "Trigger Sequencer", "Music");
 }
 
 } // namespace ecs

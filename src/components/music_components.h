@@ -241,4 +241,89 @@ struct midi_output_component {
     void flush() { pending.clear(); }
 };
 
+// ── Trigger step ─────────────────────────────────────────────────────────────
+// One cell in a step sequencer grid. Mirrors triggermachine::TriggerStep.
+// note == -1: unpitched gate (drum/perc/CV). 0..127: melodic MIDI note.
+
+struct trigger_step {
+    bool  active      {false};
+    bool  accent      {false};
+    float velocity    {0.75f};
+    int   note        {-1};
+
+    float probability {1.0f};
+    int   everyBars   {1};
+    int   barOffset   {0};
+
+    bool isMelodic() const   { return note >= 0; }
+    bool isUnpitched() const { return note < 0; }
+};
+
+// ── Trigger lane metadata (one row in a pattern) ─────────────────────────────
+
+struct trigger_lane_component {
+    std::string name      {"Lane"};
+    int         laneIndex {0};
+    bool        melodic   {false};  ///< UI hint: expect note >= 0 on active steps
+    int         defaultNote {-1};   ///< used when step.note is -1 but lane is melodic
+};
+
+// ── Trigger pattern metadata ─────────────────────────────────────────────────
+// Step grid data lives in triggermachine::TriggerPattern (or app storage).
+// Bump revision when the external pattern is edited.
+
+struct trigger_pattern_component {
+    std::string name       {"Pattern"};
+    int         numSteps   {16};
+    int         numLanes   {11};
+    float       bpm        {120.0f};
+    uint32_t    revision   {0};
+    int         rootNote   {60};
+    int         scale      {0};     ///< 0=chromatic, 1=major, 2=minor, …
+
+    bool        requestApply {false}; ///< set by inspector; bridge pulls into runtime
+};
+
+// Step grid owned by the pattern entity (companion to trigger_pattern_component).
+
+struct trigger_pattern_data_component {
+    static constexpr int MaxSteps = 64;
+    static constexpr int MaxLanes = 16;
+
+    std::array<std::array<trigger_step, MaxSteps>, MaxLanes> grid {};
+    int  numLanes    {11};
+    bool requestApply {false};
+};
+
+// ── Trigger sequencer state ──────────────────────────────────────────────────
+
+struct trigger_sequencer_component {
+    int  numSteps    {16};
+    int  currentStep {0};
+    int  currentBar  {0};
+
+    bool playing        {false};
+    bool chainEnabled   {false};
+    int  chainLength    {1};
+    int  chainPosition  {0};
+    int  activeBank     {0};
+
+    entt::entity clockSource     {entt::null};
+    entt::entity patternSource   {entt::null};
+    entt::entity transportSource {entt::null};  ///< Link / transport_control drives play state
+
+    int  stepsPerBeat {4};  ///< grid resolution: 4 = 16th notes when numSteps spans one bar
+
+    std::function<void(int step)> onStep;
+
+    bool requestApply {false}; ///< set by inspector; bridge pulls config/transport
+
+    void reset()
+    {
+        currentStep     = 0;
+        currentBar      = 0;
+        chainPosition   = 0;
+    }
+};
+
 } // namespace ecs
