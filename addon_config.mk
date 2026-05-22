@@ -17,9 +17,9 @@
 meta:
 	ADDON_NAME = ofxEnTTKit
 	ADDON_DESCRIPTION = ECS for openFrameworks built on EnTT.
-	ADDON_AUTHOR = @gitbruno
+	ADDON_AUTHOR = ofKitty
 	ADDON_TAGS = "addon" "entity" "component" "system" "ecs" "entt" "reflection"
-	ADDON_URL = https://github.com/ofrasp/ofxEnTTKit
+	ADDON_URL = https://github.com/ofKitty/ofxEnTTKit
 
 common:
 	# dependencies with other addons, a list of them separated by spaces 
@@ -30,9 +30,8 @@ common:
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
 	#
-	# $(OF_ROOT)/addons is required so cross-addon includes like
-	# "ofxEnTTKit/src/components/foo.h" resolve correctly.
-	ADDON_INCLUDES += $(OF_ROOT)/addons
+	# src — #include "components/foo.h"
+	ADDON_INCLUDES += src
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
