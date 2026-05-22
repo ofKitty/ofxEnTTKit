@@ -59,6 +59,8 @@
 #include "components/midi_source_component.h"
 #include "components/canvas_effects_component.h"
 #include "components/music_components.h"
+#include "components/color_band_component.h"
+#include "components/trace_components.h"
 
 // Default picker rows for shipped ecs::* types (ofxKit Properties, …)
 #include "component_editor_registration.h"
