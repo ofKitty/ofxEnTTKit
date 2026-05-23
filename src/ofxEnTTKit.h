@@ -27,7 +27,7 @@
 //
 // Shipped-kit “Add Component” menu rows (labels + add/remove hooks) are declared
 // in component_editor_registration.h — pulled in below so one #include gets
-// both ECS definitions and ecs::registerKitComponentMenu(...) for shells.
+// both ECS definitions and ecs::componentMenuEntries() / ecs::registerComponent().
 // ============================================================================
 
 // EnTT core

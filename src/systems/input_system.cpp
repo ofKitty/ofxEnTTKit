@@ -3,7 +3,7 @@
 namespace ecs {
 
 namespace {
-JoystickPollFn s_joystickPoll;
+InputSystem::JoystickPollFn s_joystickPoll;
 }
 
 void InputSystem::setJoystickPollHook(JoystickPollFn fn) {

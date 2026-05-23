@@ -14,7 +14,7 @@ data structs; systems contain the logic that operates on them.
 To use the whole kit: `#include "ofxEnTTKit.h"`. To minimize compile time,
 include only the specific `components/*.h` / `systems/*.h` headers you need.
 
-**Editor shells:** shipped-kit **“Add Component”** menu rows (labels + add/remove hooks, not ImGui property widgets) are exposed as `**ecs::registerKitComponentMenu`** — see the umbrella README section *“Add Component” menu data* and `src/component_editor_registration.h`.
+**Editor shells:** the **“Add Component”** picker registry is owned by ofxEnTTKit (`ecs::registerComponent`, `ecs::componentMenuEntries`) — see [`docs/component-registry.md`](docs/component-registry.md) and `src/component_editor_registration.h`.
 
 ---
 

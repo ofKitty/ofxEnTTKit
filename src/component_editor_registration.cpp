@@ -8,26 +8,6 @@
 namespace ecs {
 namespace {
 
-using ComponentMenuCallback = std::function<void(const ComponentMenuEntry&)>;
-
-template<typename T>
-void registerSimple(ComponentMenuCallback sink,
-                    const char*          name,
-                    const char*          category)
-{
-    if (!sink) return;
-
-    ComponentMenuEntry d;
-    d.name     = name;
-    d.category = category;
-    d.has      = [](entt::registry& r, entt::entity e) { return r.all_of<T>(e); };
-    d.add      = [](entt::registry& r, entt::entity e) {
-        if (!r.all_of<T>(e)) r.emplace<T>(e);
-    };
-    d.remove = [](entt::registry& r, entt::entity e) { r.remove<T>(e); };
-    sink(d);
-}
-
 bool& componentMenuFinalized()
 {
     static bool finalized = false;
@@ -46,15 +26,29 @@ std::vector<ComponentMenuEntry>& componentMenuExtensions()
     return entries;
 }
 
-void registerBuiltInComponentMenu(ComponentMenuCallback sink)
+template<typename T>
+void appendSimple(std::vector<ComponentMenuEntry>& out,
+                  const char*                     name,
+                  const char*                     category)
 {
-    if (!sink) return;
+    ComponentMenuEntry d;
+    d.name     = name;
+    d.category = category;
+    d.has      = [](entt::registry& r, entt::entity e) { return r.all_of<T>(e); };
+    d.add      = [](entt::registry& r, entt::entity e) {
+        if (!r.all_of<T>(e)) r.emplace<T>(e);
+    };
+    d.remove = [](entt::registry& r, entt::entity e) { r.remove<T>(e); };
+    out.push_back(std::move(d));
+}
 
+void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
+{
     // ── Transform ────────────────────────────────────────────────────────────
-    registerSimple<node_component>(sink, "Node", "Transform");
-    registerSimple<tag_component>(sink, "Tag", "Transform");
-    registerSimple<selectable_component>(sink, "Selectable", "Transform");
-    registerSimple<filepath_component>(sink, "File Path", "Transform");
+    appendSimple<node_component>(out, "Node", "Transform");
+    appendSimple<tag_component>(out, "Tag", "Transform");
+    appendSimple<selectable_component>(out, "Selectable", "Transform");
+    appendSimple<filepath_component>(out, "File Path", "Transform");
 
     // ── 3D ───────────────────────────────────────────────────────────────────
     {
@@ -72,16 +66,16 @@ void registerBuiltInComponentMenu(ComponentMenuCallback sink)
         d.remove = [](entt::registry& r, entt::entity e) {
             r.remove<mesh_component>(e);
         };
-        sink(d);
+        out.push_back(std::move(d));
     }
-    registerSimple<render_component>(sink, "Render", "3D");
-    registerSimple<light_component>(sink, "Light", "3D");
-    registerSimple<material_component>(sink, "Material", "3D");
-    registerSimple<shader_component>(sink, "Shader", "3D");
-    registerSimple<primitive_component>(sink, "Primitive", "3D");
-    registerSimple<billboard_component>(sink, "Billboard", "3D");
-    registerSimple<trail_component>(sink, "Trail", "3D");
-    registerSimple<tube_component>(sink, "Tube", "3D");
+    appendSimple<render_component>(out, "Render", "3D");
+    appendSimple<light_component>(out, "Light", "3D");
+    appendSimple<material_component>(out, "Material", "3D");
+    appendSimple<shader_component>(out, "Shader", "3D");
+    appendSimple<primitive_component>(out, "Primitive", "3D");
+    appendSimple<billboard_component>(out, "Billboard", "3D");
+    appendSimple<trail_component>(out, "Trail", "3D");
+    appendSimple<tube_component>(out, "Tube", "3D");
     {
         ComponentMenuEntry d;
         d.name     = "Surface";
@@ -97,92 +91,92 @@ void registerBuiltInComponentMenu(ComponentMenuCallback sink)
         d.remove = [](entt::registry& r, entt::entity e) {
             r.remove<surface_component>(e);
         };
-        sink(d);
+        out.push_back(std::move(d));
     }
-    registerSimple<instanced_mesh_component>(sink, "Instanced Mesh", "3D");
-    registerSimple<cubemap_component>(sink, "Cubemap", "3D");
-    registerSimple<texture_component>(sink, "Texture", "3D");
-    registerSimple<outline_component>(sink, "Outline", "3D");
-    registerSimple<glow_component>(sink, "Glow", "3D");
-    registerSimple<shadow_component>(sink, "Shadow", "3D");
+    appendSimple<instanced_mesh_component>(out, "Instanced Mesh", "3D");
+    appendSimple<cubemap_component>(out, "Cubemap", "3D");
+    appendSimple<texture_component>(out, "Texture", "3D");
+    appendSimple<outline_component>(out, "Outline", "3D");
+    appendSimple<glow_component>(out, "Glow", "3D");
+    appendSimple<shadow_component>(out, "Shadow", "3D");
 
     // ── 2D ───────────────────────────────────────────────────────────────────
-    registerSimple<shape2d_component>(sink, "Shape 2D", "2D");
-    registerSimple<circle_component>(sink, "Circle", "2D");
-    registerSimple<rectangle_component>(sink, "Rectangle", "2D");
-    registerSimple<ellipse_component>(sink, "Ellipse", "2D");
-    registerSimple<line_component>(sink, "Line", "2D");
-    registerSimple<triangle_component>(sink, "Triangle", "2D");
-    registerSimple<polygon_component>(sink, "Polygon", "2D");
-    registerSimple<arc_component>(sink, "Arc", "2D");
-    registerSimple<bezier_curve_component>(sink, "Bezier", "2D");
-    registerSimple<spline_component>(sink, "Spline", "2D");
-    registerSimple<path_component>(sink, "Path", "2D");
-    registerSimple<polyline_component>(sink, "Polyline", "2D");
-    registerSimple<text_2d_component>(sink, "Text", "2D");
-    registerSimple<sprite_component>(sink, "Sprite", "2D");
-    registerSimple<gradient_component>(sink, "Gradient", "2D");
+    appendSimple<shape2d_component>(out, "Shape 2D", "2D");
+    appendSimple<circle_component>(out, "Circle", "2D");
+    appendSimple<rectangle_component>(out, "Rectangle", "2D");
+    appendSimple<ellipse_component>(out, "Ellipse", "2D");
+    appendSimple<line_component>(out, "Line", "2D");
+    appendSimple<triangle_component>(out, "Triangle", "2D");
+    appendSimple<polygon_component>(out, "Polygon", "2D");
+    appendSimple<arc_component>(out, "Arc", "2D");
+    appendSimple<bezier_curve_component>(out, "Bezier", "2D");
+    appendSimple<spline_component>(out, "Spline", "2D");
+    appendSimple<path_component>(out, "Path", "2D");
+    appendSimple<polyline_component>(out, "Polyline", "2D");
+    appendSimple<text_2d_component>(out, "Text", "2D");
+    appendSimple<sprite_component>(out, "Sprite", "2D");
+    appendSimple<gradient_component>(out, "Gradient", "2D");
 
     // ── Rendering ─────────────────────────────────────────────────────────────
-    registerSimple<postfx_component>(sink, "Post FX", "Rendering");
-    registerSimple<canvas_effects_component>(sink, "Canvas FX", "Rendering");
+    appendSimple<postfx_component>(out, "Post FX", "Rendering");
+    appendSimple<canvas_effects_component>(out, "Canvas FX", "Rendering");
 
     // ── Media ────────────────────────────────────────────────────────────────
-    registerSimple<image_component>(sink, "Image", "Media");
-    registerSimple<video_component>(sink, "Video", "Media");
-    registerSimple<fbo_component>(sink, "FBO", "Media");
-    registerSimple<fbo_reference_component>(sink, "FBO Reference", "Media");
+    appendSimple<image_component>(out, "Image", "Media");
+    appendSimple<video_component>(out, "Video", "Media");
+    appendSimple<fbo_component>(out, "FBO", "Media");
+    appendSimple<fbo_reference_component>(out, "FBO Reference", "Media");
 
-    // ── Camera ─────────────────────────────────────────────────────────────────
-    registerSimple<camera_component>(sink, "Camera", "Camera");
+    // ── Camera ───────────────────────────────────────────────────────────────
+    appendSimple<camera_component>(out, "Camera", "Camera");
 
-    // ── Scene ─────────────────────────────────────────────────────────────────
-    registerSimple<skybox_component>(sink, "Skybox", "3D");
+    // ── Scene ────────────────────────────────────────────────────────────────
+    appendSimple<skybox_component>(out, "Skybox", "3D");
 
-    // ── Physics ───────────────────────────────────────────────────────────────
-    registerSimple<rigidbody_component>(sink, "Rigidbody", "Physics");
+    // ── Physics ──────────────────────────────────────────────────────────────
+    appendSimple<rigidbody_component>(out, "Rigidbody", "Physics");
 
-    // ── Audio (media) ───────────────────────────────────────────────────────────
-    registerSimple<audio_component>(sink, "Audio", "Media");
+    // ── Audio (media) ────────────────────────────────────────────────────────
+    appendSimple<audio_component>(out, "Audio", "Media");
 
-    // ── Animation ─────────────────────────────────────────────────────────────
-    registerSimple<tween_component>(sink, "Tween", "Animation");
-    registerSimple<particle_emitter_component>(sink, "Particles", "Animation");
+    // ── Animation ────────────────────────────────────────────────────────────
+    appendSimple<tween_component>(out, "Tween", "Animation");
+    appendSimple<particle_emitter_component>(out, "Particles", "Animation");
 
-    // ── Modulation ────────────────────────────────────────────────────────────
-    registerSimple<modulator_component>(sink, "Modulator", "Modulation");
-    registerSimple<mod_binding_component>(sink, "Mod Binding", "Modulation");
+    // ── Modulation ───────────────────────────────────────────────────────────
+    appendSimple<modulator_component>(out, "Modulator", "Modulation");
+    appendSimple<mod_binding_component>(out, "Mod Binding", "Modulation");
 
-    // ── Color ─────────────────────────────────────────────────────────────────
-    registerSimple<swatch_library_component>(sink, "Color Swatches", "Color");
-    registerSimple<color_gradient_component>(sink, "Color Gradient", "Color");
+    // ── Color ────────────────────────────────────────────────────────────────
+    appendSimple<swatch_library_component>(out, "Color Swatches", "Color");
+    appendSimple<color_gradient_component>(out, "Color Gradient", "Color");
 
-    // ── Hardware ──────────────────────────────────────────────────────────────
-    registerSimple<serial_component>(sink, "Serial", "Hardware");
-    registerSimple<osc_component>(sink, "OSC", "Hardware");
-    registerSimple<audio_source_component>(sink, "Audio Source", "Hardware");
-    registerSimple<midi_source_component>(sink, "MIDI", "Hardware");
-    registerSimple<mmwave_c4001_component>(sink, "mmWave C4001", "Hardware");
-    registerSimple<gpio_component>(sink, "GPIO Trigger", "Hardware");
+    // ── Hardware ─────────────────────────────────────────────────────────────
+    appendSimple<serial_component>(out, "Serial", "Hardware");
+    appendSimple<osc_component>(out, "OSC", "Hardware");
+    appendSimple<audio_source_component>(out, "Audio Source", "Hardware");
+    appendSimple<midi_source_component>(out, "MIDI", "Hardware");
+    appendSimple<mmwave_c4001_component>(out, "mmWave C4001", "Hardware");
+    appendSimple<gpio_component>(out, "GPIO Trigger", "Hardware");
 
-    // ── Input ─────────────────────────────────────────────────────────────────
-    registerSimple<keyboard_input_component>(sink, "Keyboard Input", "Input");
-    // Joystick: backends register via ecs::registerComponent() (before Runtime attach).
+    // ── Input ────────────────────────────────────────────────────────────────
+    appendSimple<keyboard_input_component>(out, "Keyboard Input", "Input");
+    // Joystick: backends register via ecs::registerComponent().
 
-    registerSimple<fbo_component>(sink, "FBO Canvas", "Media");
-    registerSimple<uv_component>(sink, "UV LED Map", "LED");
-    registerSimple<uv_sample_component>(sink, "UV Sample", "LED");
+    appendSimple<fbo_component>(out, "FBO Canvas", "Media");
+    appendSimple<uv_component>(out, "UV LED Map", "LED");
+    appendSimple<uv_sample_component>(out, "UV Sample", "LED");
 
-    // ── Music ─────────────────────────────────────────────────────────────────
-    registerSimple<transport_control_component>(sink, "Transport", "Music");
-    registerSimple<clock_component>(sink, "Clock", "Music");
-    registerSimple<sequencer_component>(sink, "Sequencer", "Music");
-    registerSimple<pattern_component>(sink, "Pattern", "Music");
-    registerSimple<midi_output_component>(sink, "MIDI Output", "Music");
-    registerSimple<trigger_lane_component>(sink, "Trigger Lane", "Music");
-    registerSimple<trigger_pattern_component>(sink, "Trigger Pattern", "Music");
-    registerSimple<trigger_pattern_data_component>(sink, "Trigger Pattern Data", "Music");
-    registerSimple<trigger_sequencer_component>(sink, "Trigger Sequencer", "Music");
+    // ── Music ────────────────────────────────────────────────────────────────
+    appendSimple<transport_control_component>(out, "Transport", "Music");
+    appendSimple<clock_component>(out, "Clock", "Music");
+    appendSimple<sequencer_component>(out, "Sequencer", "Music");
+    appendSimple<pattern_component>(out, "Pattern", "Music");
+    appendSimple<midi_output_component>(out, "MIDI Output", "Music");
+    appendSimple<trigger_lane_component>(out, "Trigger Lane", "Music");
+    appendSimple<trigger_pattern_component>(out, "Trigger Pattern", "Music");
+    appendSimple<trigger_pattern_data_component>(out, "Trigger Pattern Data", "Music");
+    appendSimple<trigger_sequencer_component>(out, "Trigger Sequencer", "Music");
 }
 
 } // namespace
@@ -202,9 +196,7 @@ void finalizeComponentMenu()
     componentMenuFinalized() = true;
 
     auto& all = componentMenuAll();
-    registerBuiltInComponentMenu([&all](const ComponentMenuEntry& row) {
-        all.push_back(row);
-    });
+    registerBuiltInComponents(all);
 
     for (auto& entry : componentMenuExtensions()) {
         all.push_back(std::move(entry));
