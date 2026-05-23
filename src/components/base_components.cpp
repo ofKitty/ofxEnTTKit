@@ -87,11 +87,11 @@ void fresh_component::setFresh(bool fresh) {
     if (fresh) m_iLastWashed = ofGetFrameNum();
 }
 
-const bool fresh_component::isFresh() {
+bool fresh_component::isFresh() const {
     return m_bFresh;
 }
 
-const uint64_t fresh_component::lastWashed() {
+uint64_t fresh_component::lastWashed() const {
     return m_iLastWashed;
 }
 

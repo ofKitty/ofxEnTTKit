@@ -155,8 +155,8 @@ struct fresh_component {
     uint64_t m_iLastWashed;
     
     void setFresh(bool fresh);
-    const bool isFresh();
-    const uint64_t lastWashed();
+    bool isFresh() const;
+    uint64_t lastWashed() const;
 };
 
 // ============================================================================

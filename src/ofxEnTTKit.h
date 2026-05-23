@@ -12,6 +12,7 @@
 // - 2D graphics components (paths, polylines, shapes)
 // - Animation components (tween, particles)
 // - Hardware I/O components (serial, OSC)
+// - Input components (keyboard; gamepad state + poll hooks)
 // - LED components (fixtures, mapping)
 // - Utility components (grids, gizmos)
 // - Systems that operate on these components
@@ -43,6 +44,7 @@
 #include "components/shape2d_component.h"
 #include "components/animation_components.h"
 #include "components/hardware_components.h"
+#include "components/input_components.h"
 #include "components/sensor_components.h"
 #include "components/led_components.h"
 #include "components/utility_components.h"
@@ -63,6 +65,7 @@
 #include "components/trace_components.h"
 
 // Default picker rows for shipped ecs::* types (ofxKit Properties, …)
+// Registry API: ecs::registerComponent(), ecs::componentMenuEntries()
 #include "component_editor_registration.h"
 
 // ECS-native node handle

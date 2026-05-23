@@ -36,6 +36,7 @@
 #include "utility_render_system.h"
 #include "gizmo_system.h"
 #include "hardware_io_system.h"
+#include "input_system.h"
 #include "trail_system.h"
 #include "effects_render_system.h"
 #include "led_system.h"

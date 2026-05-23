@@ -2,8 +2,13 @@
 
 #include "ofxEnTTKit.h"
 
+#include <algorithm>
+#include <vector>
+
 namespace ecs {
 namespace {
+
+using ComponentMenuCallback = std::function<void(const ComponentMenuEntry&)>;
 
 template<typename T>
 void registerSimple(ComponentMenuCallback sink,
@@ -23,9 +28,25 @@ void registerSimple(ComponentMenuCallback sink,
     sink(d);
 }
 
-} // namespace
+bool& componentMenuFinalized()
+{
+    static bool finalized = false;
+    return finalized;
+}
 
-void registerKitComponentMenu(ComponentMenuCallback sink)
+std::vector<ComponentMenuEntry>& componentMenuAll()
+{
+    static std::vector<ComponentMenuEntry> entries;
+    return entries;
+}
+
+std::vector<ComponentMenuEntry>& componentMenuExtensions()
+{
+    static std::vector<ComponentMenuEntry> entries;
+    return entries;
+}
+
+void registerBuiltInComponentMenu(ComponentMenuCallback sink)
 {
     if (!sink) return;
 
@@ -143,6 +164,11 @@ void registerKitComponentMenu(ComponentMenuCallback sink)
     registerSimple<midi_source_component>(sink, "MIDI", "Hardware");
     registerSimple<mmwave_c4001_component>(sink, "mmWave C4001", "Hardware");
     registerSimple<gpio_component>(sink, "GPIO Trigger", "Hardware");
+
+    // ── Input ─────────────────────────────────────────────────────────────────
+    registerSimple<keyboard_input_component>(sink, "Keyboard Input", "Input");
+    // Joystick: backends register via ecs::registerComponent() (before Runtime attach).
+
     registerSimple<fbo_component>(sink, "FBO Canvas", "Media");
     registerSimple<uv_component>(sink, "UV LED Map", "LED");
     registerSimple<uv_sample_component>(sink, "UV Sample", "LED");
@@ -157,6 +183,54 @@ void registerKitComponentMenu(ComponentMenuCallback sink)
     registerSimple<trigger_pattern_component>(sink, "Trigger Pattern", "Music");
     registerSimple<trigger_pattern_data_component>(sink, "Trigger Pattern Data", "Music");
     registerSimple<trigger_sequencer_component>(sink, "Trigger Sequencer", "Music");
+}
+
+} // namespace
+
+void registerComponentMenuEntry(ComponentMenuEntry entry)
+{
+    if (componentMenuFinalized()) {
+        componentMenuAll().push_back(std::move(entry));
+        return;
+    }
+    componentMenuExtensions().push_back(std::move(entry));
+}
+
+void finalizeComponentMenu()
+{
+    if (componentMenuFinalized()) return;
+    componentMenuFinalized() = true;
+
+    auto& all = componentMenuAll();
+    registerBuiltInComponentMenu([&all](const ComponentMenuEntry& row) {
+        all.push_back(row);
+    });
+
+    for (auto& entry : componentMenuExtensions()) {
+        all.push_back(std::move(entry));
+    }
+    componentMenuExtensions().clear();
+}
+
+const std::vector<ComponentMenuEntry>& componentMenuEntries()
+{
+    if (!componentMenuFinalized()) {
+        finalizeComponentMenu();
+    }
+    return componentMenuAll();
+}
+
+std::vector<std::string> componentMenuCategories()
+{
+    const auto& entries = componentMenuEntries();
+    std::vector<std::string> cats;
+    cats.reserve(entries.size());
+    for (const auto& entry : entries) {
+        if (std::find(cats.begin(), cats.end(), entry.category) == cats.end()) {
+            cats.push_back(entry.category);
+        }
+    }
+    return cats;
 }
 
 } // namespace ecs
