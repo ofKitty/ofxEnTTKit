@@ -42,7 +42,6 @@
 #include "led_system.h"
 #include "uv_render_system.h"
 #include "layer_system.h"
-#include "TransformHandle2DSystem.h"
 
 // Future systems:
 // #include "camera_system.h"

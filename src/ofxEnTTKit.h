@@ -64,7 +64,7 @@
 #include "components/color_band_component.h"
 #include "components/trace_components.h"
 
-// Default picker rows for shipped ecs::* types (ofxKit Properties, …)
+// Default picker rows for shipped ecs::* types
 // Registry API: ecs::registerComponent(), ecs::componentMenuEntries()
 #include "component_editor_registration.h"
 
@@ -74,6 +74,3 @@
 // Systems
 #include "systems/systems.h"
 #include "systems/TransformSystem.h"
-
-// 2D transform handle widget (ImGui, header-only)
-#include "TransformHandle2D.h"
