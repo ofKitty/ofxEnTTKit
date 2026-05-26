@@ -8,7 +8,7 @@ unsigned long g_idCounter = 0;
 // audio_component
 // ============================================================================
 
-audio_component::audio_component(const std::filesystem::path& path) : audioPath(path) {
+audio_component::audio_component(const of::filesystem::path& path) : audioPath(path) {
     if (!path.empty()) {
         loaded = soundPlayer.load(path.string());
         if (!loaded) {
@@ -99,7 +99,7 @@ uint64_t fresh_component::lastWashed() const {
 // image_component
 // ============================================================================
 
-image_component::image_component(const std::filesystem::path& path) {
+image_component::image_component(const of::filesystem::path& path) {
     if (!path.empty()) {
         if (image.load(path)) {
             image.getTexture().setTextureMinMagFilter(GL_NEAREST, GL_NEAREST);
@@ -262,6 +262,13 @@ tag_component::tag_component(std::string t)
     : tag(t) {}
 
 // ============================================================================
+// code_snippet_component
+// ============================================================================
+
+code_snippet_component::code_snippet_component(std::string t, code_language lang)
+    : text(std::move(t)), language(lang) {}
+
+// ============================================================================
 // text_component
 // ============================================================================
 
@@ -274,7 +281,7 @@ text_component::text_component(std::string text)
 // video_component
 // ============================================================================
 
-video_component::video_component(const std::filesystem::path& path) {
+video_component::video_component(const of::filesystem::path& path) {
     if (!path.empty()) {
         videoPlayer.load(path.string());
         videoPlayer.setUseTexture(true);

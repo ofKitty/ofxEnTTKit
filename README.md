@@ -15,13 +15,23 @@ All components live in the `ecs::` namespace and are plain data structs, so they
 
 ## Setup
 
-Include the umbrella header from your app — it pulls in `<entt.hpp>` plus all bundled components and systems:
+**Full kit** (editors, ofxKit, ofxBapp — all optional components and systems):
+
+```cpp
+#include "ofxEnTTKit_all.h"
+```
+
+**Core only** (scene graph, layers, basic components; add more headers as needed):
 
 ```cpp
 #include "ofxEnTTKit.h"
 ```
 
-Or, for faster compiles, include only the component/system headers you need from `src/components/` and `src/systems/`. If you don't want the ECS layer at all and just need EnTT, depend on `ofxEnTT` directly and `#include <entt.hpp>`.
+You can also include `ofxEnTTKit_all_components.h` and/or `ofxEnTTKit_all_systems.h` separately, or pick individual files under `src/components/` and `src/systems/`.
+
+Header overview: **[`docs/headers-and-build.md`](docs/headers-and-build.md)**.
+
+If you only need EnTT without OF components, depend on `ofxEnTT` and `#include <entt.hpp>`.
 
 ### “Add Component” menu data (editor shells)
 
@@ -50,7 +60,7 @@ Quick overview:
 | audio/MIDI sources                             | `components/audio_source_component.h`, `components/midi_source_component.h` |
 | filters / generators / effects / canvas        | `components/filter_components.h`, `components/generator_components.h`, `components/draw_filter_components.h`, `components/canvas_effects_component.h` |
 | utility (grid, gizmo, AABB, rigidbody, mask)   | `components/utility_components.h` |
-| systems                                        | `systems/*.h` (via `systems/systems.h`) |
+| systems                                        | `systems/*.h` (via `ofxEnTTKit_all_systems.h` or `systems/systems.h`) |
 | editor **Add Component** registry | `component_editor_registration.h` — see [`docs/component-registry.md`](docs/component-registry.md) |
 
 > Add [ofxEnTTInspector](https://github.com/ofKitty/ofxEnTTInspector) for a unified reflection and serialization foundation.

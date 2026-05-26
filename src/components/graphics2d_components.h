@@ -793,7 +793,7 @@ struct sprite_component {
 
 struct text_2d_component {
     std::string text;
-    std::filesystem::path fontPath;
+    of::filesystem::path fontPath;
     int fontSize;
     
     ofColor color;

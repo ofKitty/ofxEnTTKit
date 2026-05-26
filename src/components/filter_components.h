@@ -199,4 +199,15 @@ struct chromatic_aberration_component : filter_base {
     void apply(ofFbo& fbo) const;
 };
 
+// ============================================================================
+// EDGE DETECT FILTER (Sobel on luminance)
+// ============================================================================
+
+struct edge_detect_filter_component : filter_base {
+    float strength = 1.0f;
+
+    edge_detect_filter_component() = default;
+    void apply(ofFbo& fbo) const;
+};
+
 } // namespace ecs

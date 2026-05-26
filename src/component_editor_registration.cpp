@@ -1,6 +1,7 @@
 #include "component_editor_registration.h"
 
 #include "ofxEnTTKit.h"
+#include "ofxEnTTKit_all_components.h"
 
 #include <algorithm>
 #include <vector>
@@ -44,13 +45,12 @@ void appendSimple(std::vector<ComponentMenuEntry>& out,
 
 void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
 {
-    // ── Transform ────────────────────────────────────────────────────────────
     appendSimple<node_component>(out, "Node", "Transform");
     appendSimple<tag_component>(out, "Tag", "Transform");
+    appendSimple<code_snippet_component>(out, "Code Snippet", "Transform");
     appendSimple<selectable_component>(out, "Selectable", "Transform");
     appendSimple<filepath_component>(out, "File Path", "Transform");
 
-    // ── 3D ───────────────────────────────────────────────────────────────────
     {
         ComponentMenuEntry d;
         d.name     = "Mesh";
@@ -74,7 +74,6 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<shader_component>(out, "Shader", "3D");
     appendSimple<primitive_component>(out, "Primitive", "3D");
     appendSimple<billboard_component>(out, "Billboard", "3D");
-    appendSimple<trail_component>(out, "Trail", "3D");
     appendSimple<tube_component>(out, "Tube", "3D");
     {
         ComponentMenuEntry d;
@@ -99,8 +98,11 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<outline_component>(out, "Outline", "3D");
     appendSimple<glow_component>(out, "Glow", "3D");
     appendSimple<shadow_component>(out, "Shadow", "3D");
+    appendSimple<camera_component>(out, "Camera", "Camera");
+    appendSimple<skybox_component>(out, "Skybox", "3D");
+    appendSimple<postfx_component>(out, "Post FX", "Rendering");
+    appendSimple<trail_component>(out, "Trail", "3D");
 
-    // ── 2D ───────────────────────────────────────────────────────────────────
     appendSimple<shape2d_component>(out, "Shape 2D", "2D");
     appendSimple<circle_component>(out, "Circle", "2D");
     appendSimple<rectangle_component>(out, "Rectangle", "2D");
@@ -117,57 +119,20 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<sprite_component>(out, "Sprite", "2D");
     appendSimple<gradient_component>(out, "Gradient", "2D");
 
-    // ── Rendering ─────────────────────────────────────────────────────────────
-    appendSimple<postfx_component>(out, "Post FX", "Rendering");
     appendSimple<canvas_effects_component>(out, "Canvas FX", "Rendering");
 
-    // ── Media ────────────────────────────────────────────────────────────────
     appendSimple<image_component>(out, "Image", "Media");
     appendSimple<video_component>(out, "Video", "Media");
     appendSimple<fbo_component>(out, "FBO", "Media");
     appendSimple<fbo_reference_component>(out, "FBO Reference", "Media");
-
-    // ── Camera ───────────────────────────────────────────────────────────────
-    appendSimple<camera_component>(out, "Camera", "Camera");
-
-    // ── Scene ────────────────────────────────────────────────────────────────
-    appendSimple<skybox_component>(out, "Skybox", "3D");
-
-    // ── Physics ──────────────────────────────────────────────────────────────
-    appendSimple<rigidbody_component>(out, "Rigidbody", "Physics");
-
-    // ── Audio (media) ────────────────────────────────────────────────────────
     appendSimple<audio_component>(out, "Audio", "Media");
 
-    // ── Animation ────────────────────────────────────────────────────────────
+    appendSimple<rigidbody_component>(out, "Rigidbody", "Physics");
+
     appendSimple<tween_component>(out, "Tween", "Animation");
     appendSimple<particle_emitter_component>(out, "Particles", "Animation");
-
-    // ── Modulation ───────────────────────────────────────────────────────────
     appendSimple<modulator_component>(out, "Modulator", "Modulation");
     appendSimple<mod_binding_component>(out, "Mod Binding", "Modulation");
-
-    // ── Color ────────────────────────────────────────────────────────────────
-    appendSimple<swatch_library_component>(out, "Color Swatches", "Color");
-    appendSimple<color_gradient_component>(out, "Color Gradient", "Color");
-
-    // ── Hardware ─────────────────────────────────────────────────────────────
-    appendSimple<serial_component>(out, "Serial", "Hardware");
-    appendSimple<osc_component>(out, "OSC", "Hardware");
-    appendSimple<audio_source_component>(out, "Audio Source", "Hardware");
-    appendSimple<midi_source_component>(out, "MIDI", "Hardware");
-    appendSimple<mmwave_c4001_component>(out, "mmWave C4001", "Hardware");
-    appendSimple<gpio_component>(out, "GPIO Trigger", "Hardware");
-
-    // ── Input ────────────────────────────────────────────────────────────────
-    appendSimple<keyboard_input_component>(out, "Keyboard Input", "Input");
-    // Joystick: backends register via ecs::registerComponent().
-
-    appendSimple<fbo_component>(out, "FBO Canvas", "Media");
-    appendSimple<uv_component>(out, "UV LED Map", "LED");
-    appendSimple<uv_sample_component>(out, "UV Sample", "LED");
-
-    // ── Music ────────────────────────────────────────────────────────────────
     appendSimple<transport_control_component>(out, "Transport", "Music");
     appendSimple<clock_component>(out, "Clock", "Music");
     appendSimple<sequencer_component>(out, "Sequencer", "Music");
@@ -177,6 +142,21 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<trigger_pattern_component>(out, "Trigger Pattern", "Music");
     appendSimple<trigger_pattern_data_component>(out, "Trigger Pattern Data", "Music");
     appendSimple<trigger_sequencer_component>(out, "Trigger Sequencer", "Music");
+
+    appendSimple<swatch_library_component>(out, "Color Swatches", "Color");
+    appendSimple<color_gradient_component>(out, "Color Gradient", "Color");
+
+    appendSimple<serial_component>(out, "Serial", "Hardware");
+    appendSimple<osc_component>(out, "OSC", "Hardware");
+    appendSimple<audio_source_component>(out, "Audio Source", "Hardware");
+    appendSimple<midi_source_component>(out, "MIDI", "Hardware");
+    appendSimple<mmwave_c4001_component>(out, "mmWave C4001", "Hardware");
+    appendSimple<gpio_component>(out, "GPIO Trigger", "Hardware");
+
+    appendSimple<keyboard_input_component>(out, "Keyboard Input", "Input");
+
+    appendSimple<uv_component>(out, "UV LED Map", "LED");
+    appendSimple<uv_sample_component>(out, "UV Sample", "LED");
 }
 
 } // namespace

@@ -108,7 +108,7 @@ include only the specific `components/*.h` / `systems/*.h` headers you need.
 | `render_component`     | Render `order`, `enableLighting`, `visible` flags                  |
 | `selectable_component` | Selection state                                                    |
 | `fresh_component`      | "Dirty tracker" with frame-accurate last-clean timestamp           |
-| `filepath_component`   | `std::filesystem::path` with accessors (name, ext, exists…)        |
+| `filepath_component`   | `of::filesystem::path` with accessors (name, ext, exists…)        |
 | `resource_component`   | Type + status (`ERS_OK` / `ERS_MISSING`), auto-checks via filepath |
 
 
