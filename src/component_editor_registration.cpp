@@ -143,9 +143,6 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<trigger_pattern_data_component>(out, "Trigger Pattern Data", "Music");
     appendSimple<trigger_sequencer_component>(out, "Trigger Sequencer", "Music");
 
-    appendSimple<swatch_library_component>(out, "Color Swatches", "Color");
-    appendSimple<color_gradient_component>(out, "Color Gradient", "Color");
-    appendSimple<swatch_palette_ref_component>(out, "Swatch Palette Ref", "Color");
     appendSimple<color_band_component>(out, "Color Band", "Color");
 
     appendSimple<serial_component>(out, "Serial", "Hardware");
