@@ -408,33 +408,6 @@ inline bool rayIntersectsSymmetricAABB(const glm::vec3& origin,
     return true;
 }
 
-/// World-space ray through a screen point (matches oriented projection used when rendering).
-inline void cameraScreenToWorldRay(const ofCamera& cam,
-                                   glm::vec2       screenPx,
-                                   const ofRectangle& viewport,
-                                   glm::vec3&      outOrigin,
-                                   glm::vec3&      outDir)
-{
-    glm::mat4 mvp = cam.getOrientedProjectionMatrix(viewport) * cam.getModelViewMatrix();
-    if (cam.isVFlipped())
-        mvp = glm::scale(glm::mat4(1.f), glm::vec3(1.f, -1.f, 1.f)) * mvp;
-
-    const float x = 2.f * (screenPx.x - viewport.x) / viewport.width - 1.f;
-    const float y = 1.f - 2.f * (screenPx.y - viewport.y) / viewport.height;
-
-    auto unproject = [&](float ndcZ) {
-        const glm::vec4 h = glm::inverse(mvp) * glm::vec4(x, y, ndcZ, 1.f);
-        return glm::vec3(h) / h.w;
-    };
-
-    outOrigin = unproject(0.f);
-    const glm::vec3 w1 = unproject(1.f);
-    outDir    = w1 - outOrigin;
-    const float len = glm::length(outDir);
-    if (len > 1e-6f)
-        outDir /= len;
-}
-
 /// Raycast against selectable mesh entities (shared by all pick entry points).
 inline entt::entity pickSelectableEntityRay(entt::registry& registry,
                                               const glm::vec3& w0,
@@ -510,21 +483,7 @@ inline entt::entity pickSelectableEntity(entt::registry& registry,
     return pickSelectableEntityRay(registry, w0, dir);
 }
 
-inline entt::entity pickSelectableEntity(entt::registry& registry,
-                                         const ofCamera& cam,
-                                         glm::vec2 screenPx,
-                                         const ofRectangle& viewport)
-{
-    if (viewport.width <= 0.f || viewport.height <= 0.f)
-        return entt::null;
-
-    glm::vec3 w0, dir;
-    cameraScreenToWorldRay(cam, screenPx, viewport, w0, dir);
-    if (glm::length(dir) < 1e-6f)
-        return entt::null;
-
-    return pickSelectableEntityRay(registry, w0, dir);
-}
+// ofCamera-based picking lives in ofxKit (CameraPickUtil.h) — uses getModelViewProjectionMatrix.
 
 // ============================================================================
 // Audio Settings Component
