@@ -287,11 +287,9 @@ struct trigger_pattern_component {
 // Step grid owned by the pattern entity (companion to trigger_pattern_component).
 
 struct trigger_pattern_data_component {
-    static constexpr int MaxSteps = 64;
-    static constexpr int MaxLanes = 16;
-
-    std::array<std::array<trigger_step, MaxSteps>, MaxLanes> grid {};
+    std::vector<std::vector<trigger_step>> grid;
     int  numLanes    {11};
+    int  numSteps    {16};
     bool requestApply {false};
 };
 
