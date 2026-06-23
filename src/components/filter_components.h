@@ -121,10 +121,29 @@ struct rotate_filter_component : filter_base {
     bool rotate90CW = false;
     bool rotate90CCW = false;
     bool rotate180 = false;
-    
+    /// PixelPlotter-style 90° step count (0–3), applied before arbitrary angle.
+    int rotate90Count = 0;
+    bool horizontalMirror = false;
+    bool verticalMirror = false;
+    /// When true, pipeline should resize canvas to match rotated output dimensions.
+    bool rotateCanvas = false;
+
     rotate_filter_component() = default;
     rotate_filter_component(float angle) : angleDegrees(angle) {}
     float getEffectiveAngle() const;
+    void apply(ofFbo& fbo) const;
+};
+
+// ============================================================================
+// DUPLICATE FILTER (tile / mirror grid)
+// ============================================================================
+
+struct duplicate_filter_component : filter_base {
+    int hCount = 1;
+    int vCount = 1;
+    bool mirror = false;
+
+    duplicate_filter_component() = default;
     void apply(ofFbo& fbo) const;
 };
 
@@ -196,6 +215,17 @@ struct chromatic_aberration_component : filter_base {
     
     chromatic_aberration_component() = default;
     chromatic_aberration_component(float a) : amount(a) {}
+    void apply(ofFbo& fbo) const;
+};
+
+// ============================================================================
+// EDGE DETECT FILTER (Sobel on luminance)
+// ============================================================================
+
+struct edge_detect_filter_component : filter_base {
+    float strength = 1.0f;
+
+    edge_detect_filter_component() = default;
     void apply(ofFbo& fbo) const;
 };
 

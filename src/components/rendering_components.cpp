@@ -138,7 +138,7 @@ bool shader_component::load(const std::string& vertexPath, const std::string& fr
     }
     
     if (isLoaded) {
-        lastModifiedTime = std::filesystem::last_write_time(fragPath).time_since_epoch().count();
+        lastModifiedTime = of::filesystem::last_write_time(fragPath).time_since_epoch().count();
     }
     
     return isLoaded;
@@ -153,7 +153,7 @@ void shader_component::reload() {
 void shader_component::checkForReload() {
     if (!autoReload || !isLoaded || fragPath.empty()) return;
     
-    auto currentTime = std::filesystem::last_write_time(fragPath).time_since_epoch().count();
+    auto currentTime = of::filesystem::last_write_time(fragPath).time_since_epoch().count();
     if (currentTime != lastModifiedTime) {
         ofLogNotice("shader_component") << "Reloading shader: " << fragPath;
         reload();

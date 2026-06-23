@@ -192,7 +192,7 @@ struct shape2d_component {
     // ========================================================================
     
     std::string text = "Text";
-    std::filesystem::path fontPath;
+    of::filesystem::path fontPath;
     int fontSize = 24;
     enum HorizontalAlign { ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT };
     enum VerticalAlign { ALIGN_TOP, ALIGN_MIDDLE, ALIGN_BOTTOM };

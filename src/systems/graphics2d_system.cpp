@@ -1,5 +1,8 @@
 #include "graphics2d_system.h"
 #include "batch_renderer.h"
+#include "media_render_system.h"
+#include "../components/hierarchy_components.h"
+#include <entt.hpp>
 #if defined(OF_CAIRO)
 #include "ofGraphicsCairo.h"
 #endif
@@ -757,6 +760,10 @@ void Graphics2DRender::drawPath(const path_component & comp) {
     ofPushStyle();
     if (hasRenderer()) {
         ofPath& pathRef = const_cast<ofPath&>(comp.path);
+        // Raise curve resolution so the tessellated spine matches the exact
+        // Bezier data used by overlay handles at any zoom level.
+        const int prevRes = pathRef.getCurveResolution();
+        pathRef.setCurveResolution(64);
         if (comp.filled) {
             const auto& outlines = pathRef.getOutline();
             for (const auto& outline : outlines) {
@@ -776,6 +783,7 @@ void Graphics2DRender::drawPath(const path_component & comp) {
                 }
             }
         }
+        pathRef.setCurveResolution(prevRes);
     } else {
         comp.path.draw();
     }
@@ -828,18 +836,6 @@ void Graphics2DRender::drawText2D(const text_2d_component & comp) {
         ofDrawBitmapString(comp.text, 0, 0);
     }
     
-    ofPopStyle();
-}
-
-// ============================================================================
-// Gradient
-// ============================================================================
-
-void Graphics2DRender::drawGradient(const gradient_component & comp) {
-    if (!comp.mesh.hasVertices()) return;
-    
-    ofPushStyle();
-    comp.mesh.draw();
     ofPopStyle();
 }
 
@@ -1843,6 +1839,127 @@ void Graphics2DRender::draw(const shape2d_component & comp) {
         default:
             break;
     }
+}
+
+bool Graphics2DRender::drawEntity(entt::registry& reg, entt::entity e)
+{
+    if (!reg.valid(e)) return false;
+
+    const bool pushMatrix = reg.all_of<LocalTransform>(e);
+    if (pushMatrix) {
+        ofPushMatrix();
+        ofMultMatrix(localToMatrix(reg.get<LocalTransform>(e)));
+    }
+
+    bool drew = false;
+
+    if (reg.all_of<shape2d_component>(e)) {
+        draw(reg.get<shape2d_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<rectangle_component>(e)) {
+        drawRectangle(reg.get<rectangle_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<circle_component>(e)) {
+        drawCircle(reg.get<circle_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<ellipse_component>(e)) {
+        drawEllipse(reg.get<ellipse_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<line_component>(e)) {
+        drawLine(reg.get<line_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<triangle_component>(e)) {
+        drawTriangle(reg.get<triangle_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<polygon_component>(e)) {
+        drawPolygon(reg.get<polygon_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<arc_component>(e)) {
+        drawArc(reg.get<arc_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<bezier_curve_component>(e)) {
+        drawBezierCurve(reg.get<bezier_curve_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<spline_component>(e)) {
+        drawSpline(reg.get<spline_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<path_component>(e)) {
+        drawPath(reg.get<path_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<polyline_component>(e)) {
+        drawPolyline(reg.get<polyline_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<text_2d_component>(e)) {
+        drawText2D(reg.get<text_2d_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<vesica_piscis_component>(e)) {
+        drawVesicaPiscis(reg.get<vesica_piscis_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<sprite_component>(e)) {
+        drawSprite(reg.get<sprite_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<grid_component>(e)) {
+        drawGrid(reg.get<grid_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<progress_bar_component>(e)) {
+        drawProgressBar(reg.get<progress_bar_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<arrow_component>(e)) {
+        drawArrow(reg.get<arrow_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<star_component>(e)) {
+        drawStar(reg.get<star_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<regular_polygon_component>(e)) {
+        drawRegularPolygon(reg.get<regular_polygon_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<ring_component>(e)) {
+        drawRing(reg.get<ring_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<cross_component>(e)) {
+        drawCross(reg.get<cross_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<heart_component>(e)) {
+        drawHeart(reg.get<heart_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<flower_of_life_component>(e)) {
+        drawFlowerOfLife(reg.get<flower_of_life_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<metatrons_cube_component>(e)) {
+        drawMetatronsCube(reg.get<metatrons_cube_component>(e));
+        drew = true;
+    }
+    if (reg.all_of<image_component>(e)) {
+        MediaRenderSystem::drawImage(reg.get<image_component>(e));
+        drew = true;
+    }
+
+    if (pushMatrix) ofPopMatrix();
+    return drew;
 }
 
 } // namespace ecs

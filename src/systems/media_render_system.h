@@ -11,6 +11,10 @@ namespace ecs {
 // ============================================================================
 // Handles rendering of images, videos, and FBOs.
 // Components are pure data - this system contains the rendering logic.
+//
+// Note: webcam_component does not own an ofVideoGrabber (to keep it
+// trivially-constructible for EnTT).  The owning subsystem (e.g. WebcamTracer)
+// drives the grabber and writes state into webcam_component directly.
 
 class MediaRenderSystem : public ISystem {
 public:

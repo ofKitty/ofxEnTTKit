@@ -793,7 +793,7 @@ struct sprite_component {
 
 struct text_2d_component {
     std::string text;
-    std::filesystem::path fontPath;
+    of::filesystem::path fontPath;
     int fontSize;
     
     ofColor color;
@@ -865,47 +865,9 @@ struct text_2d_component {
     }
 };
 
-// ============================================================================
-// Gradient Component
-// ============================================================================
-
-struct gradient_component {
-    ofColor colorStart;
-    ofColor colorEnd;
-    
-    enum GradientType { LINEAR, RADIAL };
-    GradientType type;
-    
-    float angle;  // For linear gradient, in degrees
-    
-    // For radial gradient
-    glm::vec2 center;
-    float innerRadius;
-    float outerRadius;
-    
-    // Size for drawing
-    float width, height;
-    
-    // Cached mesh
-    ofMesh mesh;
-    bool needsRebuild;
-    
-    gradient_component()
-        : colorStart(255, 255, 255, 255)
-        , colorEnd(0, 0, 0, 255)
-        , type(LINEAR)
-        , angle(0)
-        , center(0, 0)
-        , innerRadius(0)
-        , outerRadius(100)
-        , width(200), height(200)
-        , needsRebuild(true)
-    {}
-    
-    void rebuild();
-    void rebuildLinear();
-    void rebuildRadial();
-};
+// NOTE: gradients are not a 2D shape component. The canonical gradient/paint
+// model lives in ofxKit (ecs::gradient_component). Shapes reference a paint
+// entity through ecs::fill_component / ecs::stroke_component.
 
 // ============================================================================
 // Grid Component

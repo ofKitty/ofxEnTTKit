@@ -129,9 +129,9 @@ struct material_component {
 struct shader_component {
     ofShader shader;
     
-    std::filesystem::path vertPath;
-    std::filesystem::path fragPath;
-    std::filesystem::path geomPath;
+    of::filesystem::path vertPath;
+    of::filesystem::path fragPath;
+    of::filesystem::path geomPath;
     
     std::map<std::string, float> floatUniforms;
     std::map<std::string, int> intUniforms;
@@ -211,7 +211,7 @@ struct texture_component {
     enum FilterMode { NEAREST, LINEAR, LINEAR_MIPMAP_LINEAR };
     
     ofTexture texture;
-    std::filesystem::path texturePath;
+    of::filesystem::path texturePath;
     TextureType type;
     
     glm::vec2 offset;
@@ -252,8 +252,8 @@ struct texture_component {
 
 struct cubemap_component {
     GLuint textureID = 0;
-    std::filesystem::path facePaths[6];
-    std::filesystem::path equirectangularPath;
+    of::filesystem::path facePaths[6];
+    of::filesystem::path equirectangularPath;
     ofTexture equirectangularTexture;
     bool useEquirectangular = false;
     float intensity = 1.0f;

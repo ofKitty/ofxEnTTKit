@@ -291,6 +291,37 @@ char ascii_filter_component::getCharForBrightness(float brightness) const {
     return charset[index];
 }
 
+void ascii_filter_component::draw(ofImage& source, float width, float height) const {
+    if (!enabled || charsX <= 0 || charsY <= 0) return;
+
+    ofPushStyle();
+
+    ofSetColor(backgroundColor);
+    ofFill();
+    ofDrawRectangle(0, 0, width, height);
+
+    const float cellW = width / charsX;
+    const float cellH = height / charsY;
+    const float srcCellW = source.getWidth() / static_cast<float>(charsX);
+    const float srcCellH = source.getHeight() / static_cast<float>(charsY);
+
+    for (int y = 0; y < charsY; y++) {
+        for (int x = 0; x < charsX; x++) {
+            const int srcX = ofClamp(static_cast<int>(x * srcCellW + srcCellW / 2), 0, source.getWidth() - 1);
+            const int srcY = ofClamp(static_cast<int>(y * srcCellH + srcCellH / 2), 0, source.getHeight() - 1);
+            const ofColor c = source.getColor(srcX, srcY);
+
+            const float brightness = c.getBrightness() / 255.0f;
+            const char ch = getCharForBrightness(brightness);
+
+            ofSetColor(colorFromImage ? c : textColor);
+            ofDrawBitmapString(std::string(1, ch), x * cellW, (y + 1) * cellH);
+        }
+    }
+
+    ofPopStyle();
+}
+
 void ascii_filter_component::draw(ofImage& source, float width, float height, ofTrueTypeFont& font) const {
     if (!enabled || charsX <= 0 || charsY <= 0) return;
     

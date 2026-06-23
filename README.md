@@ -15,22 +15,32 @@ All components live in the `ecs::` namespace and are plain data structs, so they
 
 ## Setup
 
-Include the umbrella header from your app — it pulls in `<entt.hpp>` plus all bundled components and systems:
+**Full kit** (editors, ofxKit, ofxBapp — all optional components and systems):
+
+```cpp
+#include "ofxEnTTKit_all.h"
+```
+
+**Core only** (scene graph, layers, basic components; add more headers as needed):
 
 ```cpp
 #include "ofxEnTTKit.h"
 ```
 
-Or, for faster compiles, include only the component/system headers you need from `src/components/` and `src/systems/`. If you don't want the ECS layer at all and just need EnTT, depend on `ofxEnTT` directly and `#include <entt.hpp>`.
+You can also include `ofxEnTTKit_all_components.h` and/or `ofxEnTTKit_all_systems.h` separately, or pick individual files under `src/components/` and `src/systems/`.
+
+Header overview: **[`docs/headers-and-build.md`](docs/headers-and-build.md)**.
+
+If you only need EnTT without OF components, depend on `ofxEnTT` and `#include <entt.hpp>`.
 
 ### “Add Component” menu data (editor shells)
 
-The umbrella header also declares **`ecs::registerKitComponentMenu`** (see `src/component_editor_registration.h`). This **does not register types with EnTT**; it only produces **picker metadata** — display name, category, and `has` / `add` / `remove` lambdas for each **shipped** `ecs::*` component (including defaults such as mesh box + `rebuild()`).
+The picker registry lives in **ofxEnTTKit** — see [`docs/component-registry.md`](docs/component-registry.md). This is **not** EnTT type registration; it only produces **picker metadata** (display name, category, `has` / `add` / `remove` hooks) for shipped and addon `ecs::*` components.
 
-- **ofxKit** calls this at startup and forwards each row into `ofkitty::runtime().registerComponent(...)`.
-- **Custom tools** can call the same API and wire rows into their own UI.
+- **Addons** extend the registry via `ecs::registerComponent<T>(...)`.
+- **ofxKit** calls `ecs::finalizeComponentMenu()` on attach and reads `ecs::componentMenuEntries()` for the Properties picker.
 
-ImGui property drawing remains type-based in **ofxEnTTInspector**; this list is separate and only drives **add/remove** in the registry from an editor menu.
+ImGui property drawing remains type-based in **ofxEnTTInspector**; the picker registry only drives **add/remove** from an editor menu.
 
 ## What's inside
 
@@ -50,8 +60,8 @@ Quick overview:
 | audio/MIDI sources                             | `components/audio_source_component.h`, `components/midi_source_component.h` |
 | filters / generators / effects / canvas        | `components/filter_components.h`, `components/generator_components.h`, `components/draw_filter_components.h`, `components/canvas_effects_component.h` |
 | utility (grid, gizmo, AABB, rigidbody, mask)   | `components/utility_components.h` |
-| systems                                        | `systems/*.h` (via `systems/systems.h`) |
-| editor **Add Component** rows (labels + hooks) | `component_editor_registration.h` (implementation: `component_editor_registration.cpp`) |
+| systems                                        | `systems/*.h` (via `ofxEnTTKit_all_systems.h` or `systems/systems.h`) |
+| editor **Add Component** registry | `component_editor_registration.h` — see [`docs/component-registry.md`](docs/component-registry.md) |
 
 > Add [ofxEnTTInspector](https://github.com/ofKitty/ofxEnTTInspector) for a unified reflection and serialization foundation.
 

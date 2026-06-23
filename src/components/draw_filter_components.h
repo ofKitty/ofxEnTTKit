@@ -109,6 +109,8 @@ struct ascii_filter_component {
     ascii_filter_component() = default;
     ascii_filter_component(int cx, int cy, float size = 10.0f);
     char getCharForBrightness(float brightness) const;
+    /// Bitmap-font draw (no TTF required).
+    void draw(ofImage& source, float width, float height) const;
     void draw(ofImage& source, float width, float height, ofTrueTypeFont& font) const;
 };
 

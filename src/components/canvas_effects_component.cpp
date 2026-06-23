@@ -102,6 +102,7 @@ ofFbo& canvas_effects_component::applyEffects(entt::registry& registry, ofFbo& s
         TRY_APPLY_FILTER(noise_filter_component)
         TRY_APPLY_FILTER(vignette_filter_component)
         TRY_APPLY_FILTER(chromatic_aberration_component)
+        TRY_APPLY_FILTER(edge_detect_filter_component)
         
         #undef TRY_APPLY_FILTER
     }

@@ -1,23 +1,27 @@
 #pragma once
 
 // ============================================================================
-// component_editor_registration — shipped ecs::* rows for “Add Component” UIs
+// component_editor_registration — ecs component picker registry
 // ============================================================================
-// This is **not** EnTT runtime registration — EnTT types need no signup to use.
-// Shells such as ofxKit pass a callback; we invoke it once per shipped kit
-// component with display labels plus has / add / remove hooks for the registry.
+// EnTT types need no signup to use at runtime. This module is the single
+// registry for “Add Component” picker rows (labels + has / add / remove hooks).
 //
-// ofxEnTTInspector stays type-driven: this list only drives editor pickers that
-// add or remove components, not property widgets themselves.
+// Shipped ofxEnTTKit types register during finalizeComponentMenu(). Addons
+// extend the same registry via ecs::registerComponent(). UI shells (ofxKit)
+// read ecs::componentMenuEntries() — they do not own registration.
+//
+// ofxEnTTInspector stays type-driven: this list only drives editor pickers,
+// not property widgets.
 // ============================================================================
 
 #include <entt.hpp>
 #include <functional>
 #include <string>
+#include <vector>
 
 namespace ecs {
 
-/// One selectable row in an editor shell’s “Add Component” menu for kit types.
+/// One selectable row in an “Add Component” menu.
 struct ComponentMenuEntry {
     std::string name;
     std::string category;
@@ -28,10 +32,34 @@ struct ComponentMenuEntry {
     std::function<void(entt::registry&, entt::entity)> remove;
 };
 
-/// Receives each ComponentMenuEntry; forward into your shell (e.g. ofxKit picker).
-using ComponentMenuCallback = std::function<void(const ComponentMenuEntry&)>;
+/// Queue a picker row (built-in kit types or addon backends).
+void registerComponentMenuEntry(ComponentMenuEntry entry);
 
-/// All default menu rows for ecs::* components shipped by ofxEnTTKit.
-void registerKitComponentMenu(ComponentMenuCallback sink);
+/// Shorthand — generates has / remove from T; optional custom add.
+template<typename T>
+void registerComponent(const char* name,
+                       const char* category,
+                       std::function<void(entt::registry&, entt::entity)> add = {})
+{
+    ComponentMenuEntry d;
+    d.name     = name;
+    d.category = category;
+    d.has      = [](entt::registry& r, entt::entity e) { return r.all_of<T>(e); };
+    d.add      = add ? std::move(add)
+                     : [](entt::registry& r, entt::entity e) {
+                           if (!r.all_of<T>(e)) r.emplace<T>(e);
+                       };
+    d.remove = [](entt::registry& r, entt::entity e) { r.remove<T>(e); };
+    registerComponentMenuEntry(std::move(d));
+}
+
+/// Build the registry once (shipped kit rows + queued addon rows). Idempotent.
+void finalizeComponentMenu();
+
+/// All picker rows in registration order. Calls finalizeComponentMenu() if needed.
+const std::vector<ComponentMenuEntry>& componentMenuEntries();
+
+/// Unique category names in registration order.
+std::vector<std::string> componentMenuCategories();
 
 } // namespace ecs
