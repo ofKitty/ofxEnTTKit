@@ -104,8 +104,8 @@ ecs::registerComponentMenuEntry({
 ## Kit-init helper pattern
 
 ```cpp
-// ofxGrblKit/src/kit/grbl_kit.cpp
-void grbl::kit::registerComponents() {
+// ofxPlotterKit/src/kit/plotter_kit.cpp
+void plotter::kit::registerComponents() {
     ecs::registerComponent<grbl::MachineStateComponent>("Machine State", "Machines");
     ecs::registerComponent<grbl::MotionPlannerComponent>("Motion Planner", "Machines");
     ecs::registerComponent<grbl::CoordinateSystemComponent>("WCS", "Machines");
@@ -115,7 +115,7 @@ void grbl::kit::registerComponents() {
 ```cpp
 // ofApp.cpp — call before Runtime::attach() if not using static init
 void main() {
-    grbl::kit::registerComponents();
+    plotter::kit::registerComponents();
     ofkitty::Runtime::attach(window, app);
     ofRunApp(window, std::move(app));
 }
@@ -163,7 +163,7 @@ See **ofxJoystick** (`ofxJoystickKit.h`) for a reference implementation.
 | Camera | Camera |
 | Animation | Tween, Particles |
 | Modulation | Modulator, Mod Binding |
-| Color | Color Swatches, Color Gradient |
+| Color | Color Swatches (paints — Solid Color, Gradient, Fill, Stroke — are registered by ofxKit) |
 | Hardware | Serial, OSC, Audio Source, MIDI, mmWave, GPIO |
 | Input | Keyboard Input (gamepad via addon backends) |
 | LED | UV LED Map, UV Sample |

@@ -20,6 +20,7 @@
 #include "components/base_components.h"
 #include "components/layer_components.h"
 #include "components/state_components.h"
+#include "layer_helpers.h"
 
 #include "ofxNode.h"
 

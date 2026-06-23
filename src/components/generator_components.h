@@ -6,40 +6,16 @@
 // ============================================================================
 // GENERATOR COMPONENTS - Procedural pattern generators
 // ============================================================================
-// Declarations only - implementations in generator_components.cpp
+// Pure data structs. Rendering and time-advance logic lives in
+// systems/generator_render_system.h (GeneratorRenderSystem).
 // ============================================================================
 
 namespace ecs {
 
-// ============================================================================
-// GRADIENT GENERATOR
-// ============================================================================
-
-enum class GradientDirection {
-    Horizontal = 0, Vertical, DiagonalTLBR, DiagonalTRBL, Radial, RadialFromCorner
-};
-
-struct gradient_stop {
-    float position = 0.0f;
-    ofColor color;
-    gradient_stop() = default;
-    gradient_stop(float p, const ofColor& c) : position(p), color(c) {}
-};
-
-struct gradient_generator_component {
-    bool enabled = true;
-    GradientDirection direction = GradientDirection::Vertical;
-    std::vector<gradient_stop> stops;
-    int numSteps = 64;
-    ofColor colorStart = ofColor::black;
-    ofColor colorEnd = ofColor::white;
-    
-    gradient_generator_component() = default;
-    gradient_generator_component(const ofColor& start, const ofColor& end, GradientDirection dir = GradientDirection::Vertical);
-    
-    ofColor getColorAt(float t) const;
-    void draw(float width, float height) const;
-};
+// NOTE: gradients are not generators. The canonical gradient model lives in
+// ofxKit (ecs::gradient_component). ofxKit registers it with the generator
+// render registry (see GradientGeneratorRegistration.cpp), so a gradient paint
+// still rasterizes full-area like any other generator.
 
 // ============================================================================
 // DOTS GENERATOR
@@ -62,7 +38,6 @@ struct dots_generator_component {
     
     dots_generator_component() = default;
     dots_generator_component(int cx, int cy, float size);
-    void draw(float width, float height) const;
 };
 
 // ============================================================================
@@ -81,7 +56,6 @@ struct stripes_generator_component {
     
     stripes_generator_component() = default;
     stripes_generator_component(int c, float w, bool vert = true);
-    void draw(float width, float height) const;
 };
 
 // ============================================================================
@@ -97,7 +71,6 @@ struct checkerboard_generator_component {
     
     checkerboard_generator_component() = default;
     checkerboard_generator_component(int cx, int cy);
-    void draw(float width, float height) const;
 };
 
 // ============================================================================
@@ -116,8 +89,6 @@ struct noise_generator_component {
     
     noise_generator_component() = default;
     noise_generator_component(float s, int oct = 4);
-    void draw(float width, float height) const;
-    void update(float dt);
 };
 
 } // namespace ecs

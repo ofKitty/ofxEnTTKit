@@ -353,6 +353,41 @@ inline void selectEntity(entt::registry& registry, entt::entity entity)
     registry.get<selectable_component>(entity).selected = true;
 }
 
+inline void ensureSelectable(entt::registry& registry, entt::entity entity)
+{
+    if (entity == entt::null || !registry.valid(entity))
+        return;
+    if (!registry.all_of<selectable_component>(entity))
+        registry.emplace<selectable_component>(entity, false);
+}
+
+inline void selectEntityAdd(entt::registry& registry, entt::entity entity)
+{
+    if (entity == entt::null || !registry.valid(entity))
+        return;
+    ensureSelectable(registry, entity);
+    registry.get<selectable_component>(entity).selected = true;
+}
+
+inline void selectEntityToggle(entt::registry& registry, entt::entity entity)
+{
+    if (entity == entt::null || !registry.valid(entity))
+        return;
+    ensureSelectable(registry, entity);
+    auto& sel = registry.get<selectable_component>(entity);
+    sel.selected = !sel.selected;
+}
+
+inline void getSelectedEntities(entt::registry& registry,
+                                 std::vector<entt::entity>& out)
+{
+    out.clear();
+    for (auto [entity, sel] : registry.view<selectable_component>().each()) {
+        if (sel.selected)
+            out.push_back(entity);
+    }
+}
+
 inline entt::entity getSelectedEntity(entt::registry& registry)
 {
     for (auto [entity, sel] : registry.view<selectable_component>().each()) {
@@ -569,5 +604,81 @@ struct fbo_reference_component {
                reg.any_of<fbo_component>(sourceEntity);
     }
 };
+
+// ---------------------------------------------------------------------------
+// Mesh vertex picking (screen-space nearest vertex)
+// ---------------------------------------------------------------------------
+
+/// Nearest vertex of @p mesh in screen space. @p world is the entity node matrix.
+/// Returns vertex index or -1; @p outDistPx is the pixel distance (always set).
+inline int pickMeshVertexScreen(const ofMesh& mesh,
+                                const glm::mat4& world,
+                                const ofCamera& cam,
+                                glm::vec2 screenPx,
+                                const ofRectangle& viewport,
+                                float maxPx,
+                                float& outDistPx)
+{
+    const int n = mesh.getNumVertices();
+    if (n <= 0) {
+        outDistPx = maxPx + 1.f;
+        return -1;
+    }
+
+    int   best     = -1;
+    float bestDist = maxPx + 1.f;
+
+    for (int i = 0; i < n; ++i) {
+        const glm::vec3 local = mesh.getVertex(i);
+        const glm::vec3 wpos  = glm::vec3(world * glm::vec4(local, 1.f));
+        const glm::vec3 scr   = cam.worldToScreen(wpos, viewport);
+        const float     d     = glm::distance(glm::vec2(scr.x, scr.y), screenPx);
+        if (d < bestDist) {
+            bestDist = d;
+            best     = i;
+        }
+    }
+
+    outDistPx = bestDist;
+    return (best >= 0 && bestDist <= maxPx) ? best : -1;
+}
+
+/// Pick the nearest mesh vertex among selectable mesh entities.
+inline std::pair<entt::entity, int> pickMeshVertexEntity(entt::registry& registry,
+                                                         const ofCamera& cam,
+                                                         glm::vec2 screenPx,
+                                                         const ofRectangle& viewport,
+                                                         float maxPx)
+{
+    entt::entity bestEnt  = entt::null;
+    int          bestIdx  = -1;
+    float        bestDist = maxPx + 1.f;
+
+    auto view = registry.view<node_component, mesh_component, selectable_component, render_component>();
+    for (auto entity : view) {
+        const auto& render = view.get<render_component>(entity);
+        if (!render.visible)
+            continue;
+
+        const auto& node = view.get<node_component>(entity);
+        const auto& mesh = view.get<mesh_component>(entity);
+
+        float dist = 0.f;
+        const int idx = pickMeshVertexScreen(mesh.m_mesh,
+                                             node.node.getGlobalTransformMatrix(),
+                                             cam,
+                                             screenPx,
+                                             viewport,
+                                             maxPx,
+                                             dist);
+        if (idx >= 0 && dist < bestDist) {
+            bestDist = dist;
+            bestEnt  = entity;
+            bestIdx  = idx;
+        }
+    }
+
+    return {bestEnt, bestIdx};
+}
 
 } // namespace ecs

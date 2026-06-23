@@ -86,6 +86,10 @@ No `update` or `draw` logic.
 
 Key static helpers: `drawPath`, `drawPolyline`, `drawShape2D`, `drawSVGShape`, `beginBatch` / `endBatch` (via `BatchRenderer`).  Optional Cairo/PDF vector export path.
 
+**`drawEntity(registry, entity)`** — dispatches all 2D `graphics2d_components` plus `image_component` (via `MediaRenderSystem::drawImage`). Applies `LocalTransform` when present. Used by `ofkitty::drawLayerContents` for layer-tree rendering.
+
+**Layer helpers** (`layer_helpers.h`): `ecs::createLayer`, `ecs::addToLayer`, `ecs::reparent`, visibility helpers — hierarchy only, no drawable-type factories.
+
 ---
 
 ## MeshRenderSystem

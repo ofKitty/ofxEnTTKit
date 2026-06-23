@@ -411,31 +411,136 @@ float rotate_filter_component::getEffectiveAngle() const {
     return std::fmod(angle, 360.0f);
 }
 
-void rotate_filter_component::apply(ofFbo& fbo) const {
-    if (!enabled) return;
-    const float angle = getEffectiveAngle();
-    if (std::abs(angle) < 0.01f) return;
+namespace {
 
-    ofFbo temp;
-    temp.allocate(fbo.getWidth(), fbo.getHeight(), GL_RGBA);
-
-    temp.begin();
+void copyFboToFbo(ofFbo& dst, const ofFbo& src, int w, int h)
+{
+    if (!dst.isAllocated() || dst.getWidth() != w || dst.getHeight() != h)
+        dst.allocate(w, h, GL_RGBA);
+    dst.begin();
     ofClear(0, 0, 0, 0);
     enableFboCopyBlending();
     ofSetColor(255);
-    fbo.draw(0, 0);
+    src.draw(0, 0, w, h);
     disableFboCopyBlending();
-    temp.end();
+    dst.end();
+}
+
+void rotateFbo90CW(ofFbo& fbo)
+{
+    const int w = fbo.getWidth();
+    const int h = fbo.getHeight();
+    if (w <= 0 || h <= 0) return;
+
+    ofFbo temp;
+    copyFboToFbo(temp, fbo, w, h);
+
+    fbo.allocate(h, w, GL_RGBA);
+    fbo.begin();
+    ofClear(0, 0, 0, 0);
+    enableFboCopyBlending();
+    ofSetColor(255);
+    ofPushMatrix();
+    ofTranslate(0, w);
+    ofRotateDeg(-90);
+    temp.draw(0, 0, w, h);
+    ofPopMatrix();
+    disableFboCopyBlending();
+    fbo.end();
+}
+
+void mirrorFbo(ofFbo& fbo, bool horizontal, bool vertical)
+{
+    if (!horizontal && !vertical) return;
+    const int w = fbo.getWidth();
+    const int h = fbo.getHeight();
+    if (w <= 0 || h <= 0) return;
+
+    ofFbo temp;
+    copyFboToFbo(temp, fbo, w, h);
 
     fbo.begin();
     ofClear(0, 0, 0, 0);
     enableFboCopyBlending();
     ofSetColor(255);
     ofPushMatrix();
-    ofTranslate(fbo.getWidth() / 2, fbo.getHeight() / 2);
-    ofRotateDeg(angle);
-    temp.draw(-temp.getWidth() / 2, -temp.getHeight() / 2);
+    ofTranslate(horizontal ? w : 0.f, vertical ? h : 0.f);
+    ofScale(horizontal ? -1.f : 1.f, vertical ? -1.f : 1.f);
+    temp.draw(0, 0, w, h);
     ofPopMatrix();
+    disableFboCopyBlending();
+    fbo.end();
+}
+
+} // namespace
+
+void rotate_filter_component::apply(ofFbo& fbo) const {
+    if (!enabled) return;
+
+    const int steps = std::clamp(rotate90Count, 0, 3);
+    for (int i = 0; i < steps; ++i)
+        rotateFbo90CW(fbo);
+
+    mirrorFbo(fbo, horizontalMirror, verticalMirror);
+
+    const float angle = getEffectiveAngle();
+    if (std::abs(angle) < 0.01f) return;
+
+    const int w = fbo.getWidth();
+    const int h = fbo.getHeight();
+    if (w <= 0 || h <= 0) return;
+
+    ofFbo temp;
+    copyFboToFbo(temp, fbo, w, h);
+
+    fbo.begin();
+    ofClear(0, 0, 0, 0);
+    enableFboCopyBlending();
+    ofSetColor(255);
+    ofPushMatrix();
+    ofTranslate(w / 2.f, h / 2.f);
+    ofRotateDeg(angle);
+    temp.draw(-w / 2.f, -h / 2.f, w, h);
+    ofPopMatrix();
+    disableFboCopyBlending();
+    fbo.end();
+}
+
+void duplicate_filter_component::apply(ofFbo& fbo) const {
+    if (!enabled) return;
+
+    const int hc = std::max(1, hCount);
+    const int vc = std::max(1, vCount);
+    const int w = fbo.getWidth();
+    const int h = fbo.getHeight();
+    if (w <= 0 || h <= 0) return;
+
+    ofFbo temp;
+    copyFboToFbo(temp, fbo, w, h);
+
+    const float tileW = static_cast<float>(w) / hc;
+    const float tileH = static_cast<float>(h) / vc;
+
+    fbo.begin();
+    ofClear(0, 0, 0, 0);
+    enableFboCopyBlending();
+    ofSetColor(255);
+
+    for (int y = 0; y < vc; ++y) {
+        ofPushMatrix();
+        ofTranslate(0.f, y * tileH);
+        for (int x = 0; x < hc; ++x) {
+            ofPushMatrix();
+            ofTranslate(x * tileW, 0.f);
+            ofTranslate(tileW * 0.5f, tileH * 0.5f);
+            if (mirror && (x % 2 == 1)) ofScale(-1.f, 1.f);
+            if (mirror && (y % 2 == 1)) ofScale(1.f, -1.f);
+            temp.draw(-tileW * 0.5f, -tileH * 0.5f, tileW, tileH);
+            ofPopMatrix();
+        }
+        ofPopMatrix();
+    }
+
     disableFboCopyBlending();
     fbo.end();
 }

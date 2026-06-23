@@ -32,7 +32,7 @@ include only the specific `components/*.h` / `systems/*.h` headers you need.
 | Easing (enum + helpers)               | `components/easing.h`                   | —              |
 | Modulators                            | `components/modulator_component.h`      | 2              |
 | State / morph / timeline              | `components/state_components.h`         | 4              |
-| Swatches / gradients                  | `components/swatch_components.h`        | 2              |
+| Swatches                              | `components/swatch_components.h`        | 2              |
 | Hardware I/O                          | `components/hardware_components.h`      | 2              |
 | Audio source                          | `components/audio_source_component.h`   | 1              |
 | MIDI source                           | `components/midi_source_component.h`    | 1              |
@@ -173,14 +173,17 @@ include only the specific `components/*.h` / `systems/*.h` headers you need.
 | `heart_component`           | Heart shape                             |
 
 
-**Sprites, text, gradients**
+**Sprites, text**
 
 
 | component            | purpose                               |
 | -------------------- | ------------------------------------- |
 | `sprite_component`   | Textured quad with anchor, tint, flip |
 | `text_2d_component`  | 2D text with alignment                |
-| `gradient_component` | Linear / radial gradient              |
+
+> Gradients are not a 2D shape component. The canonical paint model
+> (`ecs::solid_color_component`, `ecs::gradient_component`,
+> `ecs::fill_component`, `ecs::stroke_component`) lives in **ofxKit**.
 
 
 **Helpers / HUD**
@@ -270,16 +273,16 @@ Helpers: `property_snapshot`, `entity_snapshot`, `timeline_keyframe`.
 
 ---
 
-### Swatches / gradients — `components/swatch_components.h`
+### Swatches — `components/swatch_components.h` (ofxSwatches)
 
 
-| component                  | purpose        |
-| -------------------------- | -------------- |
-| `swatch_library_component` | Named palette library (add/find/remove swatches, color pick) |
-| `color_gradient_component` | Multi-stop gradient with interpolation mode and sampling     |
+| component                     | purpose        |
+| ----------------------------- | -------------- |
+| `swatch_library_component`    | Named palette library (add/find/remove swatches, color pick) |
+| `swatch_palette_ref_component`| Bind an entity to a swatch in a palette entity               |
 
 
-Helpers: `SwatchColor`, `GradientStop`.
+Helper: `SwatchColor`. Gradients/paints live in **ofxKit** (see below).
 
 ---
 
@@ -371,14 +374,15 @@ All inherit `filter_base` (order + enabled).
 
 | component                          | purpose                                  |
 | ---------------------------------- | ---------------------------------------- |
-| `gradient_generator_component`     | Procedural linear/radial gradient to FBO |
 | `dots_generator_component`         | Dot grid pattern                         |
 | `stripes_generator_component`      | Stripe pattern                           |
 | `checkerboard_generator_component` | Checkerboard pattern                     |
 | `noise_generator_component`        | Perlin / simplex noise field             |
 
-
-Helper: `gradient_stop`.
+> The gradient generator lives in **ofxKit** — `ecs::gradient_component` is
+> registered with the generator render registry by `GradientGeneratorRegistration`
+> (see `PaintInspectors.cpp`), so a gradient paint rasterizes full-area like any
+> other generator.
 
 ---
 

@@ -3,6 +3,7 @@
 #include "base_system.h"
 #include "IShapeRenderer.h"
 #include "ofMain.h"
+#include <entt.hpp>
 #include <string>
 #include "../components/graphics2d_components.h"
 #include "../components/shape2d_component.h"
@@ -91,7 +92,6 @@ public:
     static void drawPath(const ecs::path_component& comp);
     static void drawPolyline(const ecs::polyline_component& comp);
     static void drawText2D(const ecs::text_2d_component& comp);
-    static void drawGradient(const ecs::gradient_component& comp);
     static void drawVesicaPiscis(const ecs::vesica_piscis_component& comp);
     static void drawSprite(const ecs::sprite_component& comp);
     static void drawGrid(const ecs::grid_component& comp);
@@ -104,6 +104,10 @@ public:
     static void drawHeart(const ecs::heart_component& comp);
     static void drawFlowerOfLife(const ecs::flower_of_life_component& comp);
     static void drawMetatronsCube(const ecs::metatrons_cube_component& comp);
+
+    /// Draw any 2D / image components on @p e. Applies LocalTransform when present.
+    /// Returns true if at least one drawable component was rendered.
+    static bool drawEntity(entt::registry& reg, entt::entity e);
 
 private:
     static BatchRenderer* s_activeBatch;

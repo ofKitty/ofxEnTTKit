@@ -117,7 +117,7 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<polyline_component>(out, "Polyline", "2D");
     appendSimple<text_2d_component>(out, "Text", "2D");
     appendSimple<sprite_component>(out, "Sprite", "2D");
-    appendSimple<gradient_component>(out, "Gradient", "2D");
+    // Gradient/solid paints are registered by ofxKit (GradientGeneratorRegistration.cpp).
 
     appendSimple<canvas_effects_component>(out, "Canvas FX", "Rendering");
 
@@ -126,6 +126,7 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<fbo_component>(out, "FBO", "Media");
     appendSimple<fbo_reference_component>(out, "FBO Reference", "Media");
     appendSimple<audio_component>(out, "Audio", "Media");
+    appendSimple<webcam_component>(out, "Webcam", "Media");
 
     appendSimple<rigidbody_component>(out, "Rigidbody", "Physics");
 

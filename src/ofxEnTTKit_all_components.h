@@ -26,3 +26,4 @@
 #include "components/utility_components.h"
 #include "components/color_band_component.h"
 #include "components/trace_components.h"
+#include "components/webcam_component.h"

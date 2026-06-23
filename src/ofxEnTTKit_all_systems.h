@@ -12,6 +12,7 @@
 #include "systems/uv_render_system.h"
 #include "systems/effects_render_system.h"
 #include "systems/media_render_system.h"
+#include "systems/generator_render_system.h"
 #include "systems/animation_system.h"
 #include "systems/modulator_system.h"
 #include "systems/physics_system.h"
