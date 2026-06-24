@@ -23,6 +23,7 @@
 #include "layer_helpers.h"
 
 #include "ofxNode.h"
+#include "entity_handle.h"
 
 #include "systems/systems_core.h"
 #include "systems/TransformSystem.h"
