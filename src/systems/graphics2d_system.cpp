@@ -1962,4 +1962,95 @@ bool Graphics2DRender::drawEntity(entt::registry& reg, entt::entity e)
     return drew;
 }
 
+namespace {
+
+bool pointInPolygon(const std::vector<glm::vec2>& v, const glm::vec2& p)
+{
+    if (v.size() < 3) return false;
+    bool inside = false;
+    for (size_t i = 0, j = v.size() - 1; i < v.size(); j = i++) {
+        const bool crosses = (v[i].y > p.y) != (v[j].y > p.y);
+        if (crosses &&
+            p.x < (v[j].x - v[i].x) * (p.y - v[i].y) / (v[j].y - v[i].y) + v[i].x)
+            inside = !inside;
+    }
+    return inside;
+}
+
+float distanceToSegment(const glm::vec2& p, const glm::vec2& a, const glm::vec2& b)
+{
+    const glm::vec2 ab = b - a;
+    const float     len2 = glm::dot(ab, ab);
+    const float     t = len2 > 0.f ? glm::clamp(glm::dot(p - a, ab) / len2, 0.f, 1.f) : 0.f;
+    return glm::distance(p, a + ab * t);
+}
+
+bool bboxHit(const ofRectangle& r, const glm::vec2& p, float tol)
+{
+    return p.x >= r.x - tol && p.x <= r.x + r.width + tol
+        && p.y >= r.y - tol && p.y <= r.y + r.height + tol;
+}
+
+} // namespace
+
+bool Graphics2DRender::hitTestEntity(entt::registry& reg, entt::entity e,
+                                     const glm::vec2& worldPoint, float tol)
+{
+    if (!reg.valid(e)) return false;
+
+    glm::vec2 p = worldPoint;
+    if (reg.all_of<LocalTransform>(e)) {
+        const glm::mat4 inv = glm::inverse(localToMatrix(reg.get<LocalTransform>(e)));
+        const glm::vec4 l   = inv * glm::vec4(worldPoint.x, worldPoint.y, 0.f, 1.f);
+        p = { l.x, l.y };
+    }
+
+    if (reg.all_of<rectangle_component>(e)
+        && bboxHit(reg.get<rectangle_component>(e).getRect(), p, tol))
+        return true;
+    if (reg.all_of<circle_component>(e)
+        && reg.get<circle_component>(e).contains(p))
+        return true;
+    if (reg.all_of<ellipse_component>(e)
+        && reg.get<ellipse_component>(e).contains(p))
+        return true;
+    if (reg.all_of<triangle_component>(e)
+        && reg.get<triangle_component>(e).contains(p))
+        return true;
+    if (reg.all_of<polygon_component>(e)) {
+        const auto& c = reg.get<polygon_component>(e);
+        if (pointInPolygon(c.vertices, p) || bboxHit(c.getBoundingBox(), p, tol))
+            return true;
+    }
+    if (reg.all_of<line_component>(e)) {
+        const auto& c = reg.get<line_component>(e);
+        if (distanceToSegment(p, c.start, c.end) <= std::max(c.lineWidth * 0.5f, tol))
+            return true;
+    }
+    if (reg.all_of<polyline_component>(e)
+        && bboxHit(reg.get<polyline_component>(e).getBoundingBox(), p, tol))
+        return true;
+    if (reg.all_of<text_2d_component>(e)
+        && bboxHit(reg.get<text_2d_component>(e).getBoundingBox(), p, tol))
+        return true;
+    if (reg.all_of<sprite_component>(e)
+        && bboxHit(reg.get<sprite_component>(e).getBoundingBox(), p, tol))
+        return true;
+    if (reg.all_of<vesica_piscis_component>(e)
+        && bboxHit(reg.get<vesica_piscis_component>(e).getBoundingBox(), p, tol))
+        return true;
+    if (reg.all_of<path_component>(e)) {
+        auto& pc = reg.get<path_component>(e);
+        ofRectangle bb;
+        bool first = true;
+        for (auto& pl : pc.path.getOutline()) {
+            if (first) { bb = pl.getBoundingBox(); first = false; }
+            else       { bb.growToInclude(pl.getBoundingBox()); }
+        }
+        if (!first && bboxHit(bb, p, tol)) return true;
+    }
+
+    return false;
+}
+
 } // namespace ecs

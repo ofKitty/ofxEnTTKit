@@ -109,6 +109,14 @@ public:
     /// Returns true if at least one drawable component was rendered.
     static bool drawEntity(entt::registry& reg, entt::entity e);
 
+    /// Hit-test @p e against a world-space 2D point in content units. Applies the
+    /// entity's LocalTransform (inverse) when present, then tests the shape's
+    /// fill/area (precise for rect/circle/ellipse/triangle/polygon, segment
+    /// distance for lines, bounding box for path/polyline/text/sprite). @p tol is
+    /// an extra pick slop in content units for thin shapes. Returns true on hit.
+    static bool hitTestEntity(entt::registry& reg, entt::entity e,
+                              const glm::vec2& worldPoint, float tol = 0.f);
+
 private:
     static BatchRenderer* s_activeBatch;
     static IShapeRenderer* s_renderer;

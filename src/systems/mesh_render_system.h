@@ -40,4 +40,11 @@ public:
     static void createSkyboxMesh(mesh_component& comp);
 };
 
+// ----------------------------------------------------------------------------
+// drawMeshes — render every node_component + mesh_component + render_component
+// entity, using the node's world transform. The 3D analogue of
+// ofkitty::drawLayerContents. Call inside your camera's begin()/end().
+// ----------------------------------------------------------------------------
+void drawMeshes(entt::registry& registry);
+
 } // namespace ecs

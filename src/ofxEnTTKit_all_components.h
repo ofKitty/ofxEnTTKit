@@ -17,6 +17,7 @@
 #include "components/draw_filter_components.h"
 #include "components/canvas_effects_component.h"
 #include "components/generator_components.h"
+#include "components/paint_components.h"
 #include "components/input_components.h"
 #include "components/hardware_components.h"
 #include "components/sensor_components.h"

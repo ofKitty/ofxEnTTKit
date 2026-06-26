@@ -24,6 +24,7 @@
 
 #include "ofxNode.h"
 #include "entity_handle.h"
+#include "painter.h"
 
 #include "systems/systems_core.h"
 #include "systems/TransformSystem.h"

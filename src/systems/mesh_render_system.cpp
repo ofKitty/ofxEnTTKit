@@ -4,7 +4,20 @@ namespace ecs {
 using namespace ecs;
 
 void MeshRenderSystem::draw(entt::registry& registry) {
-    // Mesh rendering is handled by ofxBapp's renderEntity for proper transform handling
+    drawMeshes(registry);
+}
+
+void drawMeshes(entt::registry& registry) {
+    for (auto [e, nd, m, rc] :
+         registry.view<node_component, mesh_component, render_component>().each()) {
+        if (!rc.visible) continue;
+        ofPushMatrix();
+        ofMultMatrix(nd.node.getGlobalTransformMatrix());
+        ofSetColor(m.color);
+        if (m.drawFaces)     m.m_mesh.draw();
+        if (m.drawWireframe) m.m_mesh.drawWireframe();
+        ofPopMatrix();
+    }
 }
 
 // ============================================================================

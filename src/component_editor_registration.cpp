@@ -117,7 +117,8 @@ void registerBuiltInComponents(std::vector<ComponentMenuEntry>& out)
     appendSimple<polyline_component>(out, "Polyline", "2D");
     appendSimple<text_2d_component>(out, "Text", "2D");
     appendSimple<sprite_component>(out, "Sprite", "2D");
-    // Gradient/solid paints are registered by ofxKit (GradientGeneratorRegistration.cpp).
+    // Gradient/solid paint "Add Component" rows are registered by ofxEnTTInspector
+    // (inspectors/paint_inspectors.cpp), alongside their ImGui editors.
 
     appendSimple<canvas_effects_component>(out, "Canvas FX", "Rendering");
 

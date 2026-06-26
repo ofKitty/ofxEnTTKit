@@ -13,8 +13,8 @@
 namespace ecs {
 
 // NOTE: gradients are not generators. The canonical gradient model lives in
-// ofxKit (ecs::gradient_component). ofxKit registers it with the generator
-// render registry (see GradientGeneratorRegistration.cpp), so a gradient paint
+// components/paint_components.h (ecs::gradient_component). It is registered with
+// the generator render registry inside finalizeGenerators(), so a gradient paint
 // still rasterizes full-area like any other generator.
 
 // ============================================================================

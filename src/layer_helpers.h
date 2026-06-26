@@ -53,14 +53,22 @@ public:
     bool locked() const;
     ofColor color() const;
 
+    /// OF-like immediate authoring scope (see painter.h). Between begin()/end()
+    /// the free ecs::fill / ecs::drawRect / ... functions target this layer.
+    /// Implemented in painter.cpp.
+    void begin();
+    void end();
+
 private:
     entt::registry* reg_ {nullptr};
     entt::entity    entity_ {entt::null};
 };
 
 // ============================================================================
-// Layer hierarchy API (membership only — no drawable-type factories)
+// Layer hierarchy API (membership only)
 // ============================================================================
+// Drawable-type factories live in painter.h (ecs::Painter and the free
+// ecs::drawRect / ... immediate API), built on top of these helpers.
 
 Layer createLayer(entt::registry& reg,
                   const std::string& name = "",

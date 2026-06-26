@@ -379,10 +379,10 @@ All inherit `filter_base` (order + enabled).
 | `checkerboard_generator_component` | Checkerboard pattern                     |
 | `noise_generator_component`        | Perlin / simplex noise field             |
 
-> The gradient generator lives in **ofxKit** — `ecs::gradient_component` is
-> registered with the generator render registry by `GradientGeneratorRegistration`
-> (see `PaintInspectors.cpp`), so a gradient paint rasterizes full-area like any
-> other generator.
+> The gradient generator is built in — `ecs::gradient_component` (see
+> `components/paint_components.h`) is registered with the generator render
+> registry inside `finalizeGenerators()`, so a gradient paint rasterizes
+> full-area like any other generator.
 
 ---
 

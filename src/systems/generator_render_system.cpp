@@ -1,4 +1,5 @@
 #include "generator_render_system.h"
+#include "../components/paint_components.h"   // gradient_component, drawGradientFill
 
 namespace ecs {
 
@@ -25,7 +26,6 @@ void finalizeGenerators() {
     if (s_finalized) return;
     s_finalized = true;
 
-    // Gradient is registered by ofxKit (GradientGeneratorRegistration.cpp).
     registerGenerator<dots_generator_component>("Dots", &GeneratorRenderSystem::drawDots);
     registerGenerator<stripes_generator_component>("Stripes", &GeneratorRenderSystem::drawStripes);
     registerGenerator<checkerboard_generator_component>("Checkerboard", &GeneratorRenderSystem::drawCheckerboard);
@@ -33,6 +33,34 @@ void finalizeGenerators() {
         "Noise",
         &GeneratorRenderSystem::drawNoise,
         [](noise_generator_component& c, float dt) { c.timeOffset += dt * c.speed; });
+
+    // Gradient paint doubles as a full-area generator (pixels only). Custom
+    // entry rather than registerGenerator<T> because gradient_component has no
+    // `enabled` flag. Lives here (alongside the other built-ins) so the paint
+    // data layer stays free of any systems dependency.
+    {
+        GeneratorRenderer r;
+        r.name           = "Gradient";
+        r.supportsVector = false;
+        r.draw = [](entt::registry& reg) {
+            auto view = reg.view<gradient_component>();
+            for (auto e : view) {
+                const gradient_component& g = view.get<gradient_component>(e);
+                if (auto* fc = reg.try_get<fbo_component>(e)) {
+                    if (!fc->fbo.isAllocated()) fc->reallocate();
+                    fc->fbo.begin();
+                    if (fc->clearFrame) ofClear(fc->clearColor);
+                    drawGradientFill(g, (float)fc->width, (float)fc->height);
+                    fc->fbo.end();
+                    fc->dirty = false;
+                } else {
+                    const ofRectangle vp = ofGetCurrentViewport();
+                    drawGradientFill(g, vp.width, vp.height);
+                }
+            }
+        };
+        registerGeneratorRenderer(std::move(r));
+    }
 }
 
 const std::vector<GeneratorRenderer>& generatorRenderers() {
